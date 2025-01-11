@@ -22,7 +22,7 @@ python3.9 main.py
 
 3. Enter your settlements positions using the mapping on the board map.
 You can now see statictics about the resources you can receive at each round.
-![Screenshot](https://github.com/jeremymaignan/catan-statistics/blob/main/assets/values.png)
+![Screenshot](https://github.com/jeremymaignan/catan-statistics/blob/main/assets/settlements.png)
 ![Screenshot](https://github.com/jeremymaignan/catan-statistics/blob/main/assets/board.png)
 
 4. You can add new settlements anytime and the probabilities will be updated.
