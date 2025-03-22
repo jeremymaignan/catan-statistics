@@ -8,8 +8,8 @@ from board import (
 )
 import click
 from config import resources_map, dice_probability, indexes, tile_images_path
-from image_service import crop_image
-from openai_service import parse_img
+from services.image import crop_image
+from services.openai import parse_image_data
 
 
 def setup_resources() -> List[str]:
@@ -154,7 +154,7 @@ def main(file):
         board_color_map = {v["board_color"]: k for k, v in resources_map.items()}
 
         for i in range(19):
-            tile = parse_img(f"{tile_images_path}/tile_{i+1}.png")
+            tile = parse_image_data(f"{tile_images_path}/tile_{i+1}.png")
             resources.append(board_color_map[tile["color"]])
             values.append(tile["value"])
         display_board_with_values(resources, values)

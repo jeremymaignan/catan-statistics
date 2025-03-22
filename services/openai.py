@@ -17,9 +17,9 @@ prompt = """
 Parse this picture and return the background color and number.
 
 The color can be grey, brown, yellow, beige, light green or dark green.
-If there is no number on it, set it to 7, if there is a number it cannot be beige.
 
-Also f there is no number, the color should be beige.
+If there is no number on it, set it to 7 and the color should be beige.
+If there is a number on it, the number cannot be 7 and the color cannot be beige.
 
 The output format must be JSON such as:
 {
@@ -35,7 +35,7 @@ def clean_json_response(content):
     return json_match.group(1) if json_match else content  # Extract JSON part only
 
 
-def parse_img(image_path):
+def parse_image_data(image_path):
     # Getting the Base64 string
     base64_image = encode_image(image_path)
 

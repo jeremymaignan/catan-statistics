@@ -77,6 +77,5 @@ def crop_image(filename):
         hex_img = crop_hexagon(image, center, tile_height * 0.9)
         filename = f"{tile_images_path}/tile_{i+1}.png"
         cv2.imwrite(filename, hex_img)
-        print(f"Saved: {filename}")
 
     print("All tiles cropped successfully!")
