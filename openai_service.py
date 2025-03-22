@@ -5,10 +5,12 @@ import re
 
 client = OpenAI()
 
+
 # Function to encode the image
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
+
 
 prompt = """
 Parse this picture and return the background color and number.
@@ -24,6 +26,7 @@ The output format must be JSON such as:
     "color": "yellow"
 } 
 """
+
 
 def clean_json_response(content):
     # Remove markdown code blocks
