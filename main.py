@@ -1,11 +1,14 @@
 import sys
 from typing import List
 from termcolor import colored
-from maps import map_resouces, map_resources_and_values_and_angles
-from config import resources_map, dice_probability, indexes, settlements_positions, settlements_icon
+from board import display_board_with_values, display_full_board, display_board_with_resources
+from config import resources_map, dice_probability, indexes, tile_images_path
+import click
+from image_service import crop_image
+from openai_service import parse_img
 
-def setup_resources():
-    resources = input("Enter resources: (Wood, Brick, Ore, Sheep, Wheat, Robber)\n(ex: o,r,wo,w,b,wo,b,w,s,b,s,s,wo,o,wo,w,o,w,s)\n->")
+def setup_resources() -> List[str]:
+    resources = input("Enter resources: (Wood, Brick, Ore, Sheep, Wheat, Robber)\n(ex: o,r,wo,w,b,wo,b,w,s,b,s,s,wo,o,wo,w,o,w,s)\n->").strip()
     resources = resources.split(",")
 
     # Check input
@@ -17,29 +20,17 @@ def setup_resources():
             print("Invalid resource {}. Must be in o,r,wo,w,b,s".format(resource))
             return None
 
-    print(map_resouces.format(*[colored(resources_map[x]["text"],resources_map[x]["color"])  for x in resources]))
-
     return resources
 
-def setup_values(resources: List[str]) -> List[str]:
-    values = input("Enter values: (0 for the robber)\n(ex: 2,0,5,6,9,10,8,3,4,11,3,4,8,5,6,11,10,9,12)\n->")
+
+def setup_values() -> List[str]:
+    values = input("Enter values: (0 for the robber)\n(ex: 2,0,5,6,9,10,8,3,4,11,3,4,8,5,6,11,10,9,12)\n->").strip()
     values = values.split(",")
 
     # Check input
     if len(values) != 19:
         print("Invalid values number. Expected 19, got {}".format(len(values)))
         return None
-
-    # Display map
-    formated_values = ["{} ".format(x) if int(x) <= 9 else x for x in values]
-    colored_resources = [colored(resources_map[x]["text"], resources_map[x]["color"])  for x in resources]
-    display = settlements_positions[:7] + colored_resources[:3] + formated_values[:3] + \
-        settlements_positions[7:16] + colored_resources[3:7] + formated_values[3:7] + \
-        settlements_positions[16:27] + colored_resources[7:12] + formated_values[7:12] + \
-        settlements_positions[27:38] + colored_resources[12:16] + formated_values[12:16] + \
-        settlements_positions[38:47] + colored_resources[16:19] + formated_values[16:19] + \
-        settlements_positions[47:]
-    print(map_resources_and_values_and_angles.format(*display))
 
     return values
 
@@ -48,19 +39,22 @@ def play(resources: List[str], values: List[str]):
 
     while True:
         # Input new settlements positions
-        settlements += input("Enter your settlements positions: ")
+        new_settlement = input("Enter your settlements positions: ").strip()
 
-        # Display current map
-        settlements_position = [settlements_positions[i] if x not in settlements else settlements_icon for i, x in enumerate(indexes.keys())]
-        formated_values = ["{} ".format(x) if int(x) <= 9 else x for x in values]
-        colored_resources = [colored(resources_map[x]["text"],resources_map[x]["color"])  for x in resources]
-        display = settlements_position[:7] + colored_resources[:3] + formated_values[:3] + \
-            settlements_position[7:16] + colored_resources[3:7] + formated_values[3:7] + \
-            settlements_position[16:27] + colored_resources[7:12] + formated_values[7:12] + \
-            settlements_position[27:38] + colored_resources[12:16] + formated_values[12:16] + \
-            settlements_position[38:47] + colored_resources[16:19] + formated_values[16:19] + \
-            settlements_position[47:]
-        print(map_resources_and_values_and_angles.format(*display))
+        if new_settlement == ".":
+            for key, value in dice_probability.items():
+                if key == 0:
+                    continue
+                print("[{}]:\t{}\t{}/36\t{}%".format(
+                    colored(key, value[2]),
+                    round(value[0], 3),
+                    value[1],
+                    int(value[1] * 100 / 36)
+                ))
+            continue
+
+        settlements += new_settlement
+        display_full_board(resources, values, settlements)
 
         # List resources per dice value
         # Calculate probabilities per resource
@@ -119,11 +113,33 @@ def play(resources: List[str], values: List[str]):
         print("")
         print("Your settlements: {}".format(settlements))
 
-if __name__ == "__main__":
-    resources = setup_resources()
-    if not resources:
-        sys.exit(1)
-    values = setup_values(resources)
-    if not values:
-        sys.exit(1)
+@click.command()
+@click.option('--file', type=click.Path(), default=None, help='Path to the input file (optional)')
+def main(file):
+    if file:
+        crop_image(file)
+        # sys.exit(0)
+        resources = []
+        values = []
+        board_color_map = {v["board_color"]: k for k, v in resources_map.items()}
+
+        for i in range(19):
+            tile = parse_img(f"{tile_images_path}/tile_{i+1}.png")
+            resources.append(board_color_map[tile['color']])
+            values.append(tile['value'])
+        display_board_with_values(resources, values)
+    else:
+        resources = setup_resources()
+        if not resources:
+            sys.exit(1)
+        display_board_with_resources(resources)
+
+        values = setup_values()
+        if not values:
+            sys.exit(1)
+        display_board_with_values(resources, values)
+
     play(resources, values)
+
+if __name__ == "__main__":
+    main()

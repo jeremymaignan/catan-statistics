@@ -2,29 +2,30 @@ from termcolor import colored
 
 settlements_positions = list("abcdefghijklmnopqrstuvwxyz1ABCDEFGHIJKLMNOPQRSTUVWXYZ2")
 settlements_icon = colored("Δ", "yellow", attrs=["bold"])
+tile_images_path = 'tmp'
 
 resources_map = {
-    "wo": {"text": "Wood ", "color": "green"},
-    "b": {"text": "Brick", "color": "red"},
-    "o": {"text": " Ore ", "color": "dark_grey"},
-    "s": {"text": "Sheep", "color": "light_green"},
-    "w": {"text": "Wheat", "color": "yellow"},
-    "r": {"text": "Empty", "color": "white"},
+    "wo": {"text": "Wood ", "color": "green", "board_color": "dark green"},
+    "b": {"text": "Brick", "color": "red", "board_color": "brown"},
+    "o": {"text": " Ore ", "color": "dark_grey", "board_color": "grey"},
+    "s": {"text": "Sheep", "color": "light_green", "board_color": "light green"},
+    "w": {"text": "Wheat", "color": "yellow", "board_color": "yellow"},
+    "r": {"text": "Empty", "color": "white", "board_color": "beige"},
 }
 
 dice_probability = {
-    0: (0.0, 0),
-    2: (0.028, 1),
-    3: (0.056, 2),
-    4: (0.083, 3),
-    5: (0.111, 4),
-    6: (0.139, 5),
-    7: (0.167, 6),
-    8: (0.139, 5),
-    9: (0.111, 4),
-    10: (0.083, 3),
-    11: (0.056, 2),
-    12: (0.028, 1),
+    0: (0.0, 0, None),
+    2: (0.028, 1, "red"),
+    3: (0.056, 2, "red"),
+    4: (0.083, 3, "yellow"),
+    5: (0.111, 4, "yellow"),
+    6: (0.139, 5, "green"),
+    7: (0.167, 6, "green"),
+    8: (0.139, 5, "green"),
+    9: (0.111, 4, "yellow"),
+    10: (0.083, 3, "yellow"),
+    11: (0.056, 2, "red"),
+    12: (0.028, 1, "red"),
 }
 
 indexes = {
