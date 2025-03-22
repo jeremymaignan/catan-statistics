@@ -1,7 +1,9 @@
+import os
+
 import cv2
 import numpy as np
+
 from config import tile_images_path
-import os
 
 
 # Helper function to crop hexagonal tile

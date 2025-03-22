@@ -1,6 +1,9 @@
 from typing import List
+
 from termcolor import colored
-from config import resources_map, settlements_positions, settlements_icon, indexes
+
+from config import (indexes, resources_map, settlements_icon,
+                    settlements_positions)
 
 map_resouces = """
         +---+---+---+---+---+---+

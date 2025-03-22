@@ -6,8 +6,8 @@ from board import (
     display_full_board,
     display_board_with_resources,
 )
-from config import resources_map, dice_probability, indexes, tile_images_path
 import click
+from config import resources_map, dice_probability, indexes, tile_images_path
 from image_service import crop_image
 from openai_service import parse_img
 

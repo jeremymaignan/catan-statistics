@@ -1,7 +1,8 @@
 import base64
-from openai import OpenAI
 import json
 import re
+
+from openai import OpenAI
 
 client = OpenAI()
 
