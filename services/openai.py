@@ -6,13 +6,6 @@ from openai import OpenAI
 
 client = OpenAI()
 
-
-# Function to encode the image
-def encode_image(image_path):
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode("utf-8")
-
-
 prompt = """
 Parse this picture and return the background color and number.
 
@@ -27,6 +20,12 @@ The output format must be JSON such as:
     "color": "yellow"
 } 
 """
+
+
+# Function to encode the image
+def encode_image(image_path):
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
 
 
 def clean_json_response(content):
@@ -61,5 +60,5 @@ def parse_image_data(image_path):
     raw_content = response.choices[0].message.content.strip()
     cleaned_content = clean_json_response(raw_content)
     parsed_content = json.loads(cleaned_content)
-    print(image_path, parsed_content)
+
     return parsed_content

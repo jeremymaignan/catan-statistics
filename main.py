@@ -1,7 +1,7 @@
-import sys
-from typing import List
+from typing import List, Optional, Tuple
 
 import click
+from termcolor import colored
 
 from board import display_board_with_resources, display_board_with_values
 from config import resources_map, tile_images_path
@@ -10,11 +10,14 @@ from services.image import crop_image
 from services.openai import parse_image_data
 
 
-def setup_resources() -> List[str]:
-    resources = input(
-        "Enter resources: (Wood, Brick, Ore, Sheep, Wheat, Robber)\n(ex: o,r,wo,w,b,wo,b,w,s,b,s,s,wo,o,wo,w,o,w,s)\n->"
-    ).strip()
-    resources = resources.split(",")
+def setup_resources() -> Optional[List[str]]:
+    resources = (
+        input(
+            "Enter resources: (Wood, Brick, Ore, Sheep, Wheat, Robber)\n(ex: o,r,wo,w,b,wo,b,w,s,b,s,s,wo,o,wo,w,o,w,s)\n->"
+        )
+        .strip()
+        .split(",")
+    )
 
     # Check input
     if len(resources) != 19:
@@ -28,11 +31,14 @@ def setup_resources() -> List[str]:
     return resources
 
 
-def setup_values() -> List[str]:
-    values = input(
-        "Enter values: (0 for the robber)\n(ex: 2,0,5,6,9,10,8,3,4,11,3,4,8,5,6,11,10,9,12)\n->"
-    ).strip()
-    values = values.split(",")
+def setup_values() -> Optional[List[str]]:
+    values = (
+        input(
+            "Enter values: (0 for the robber)\n(ex: 2,0,5,6,9,10,8,3,4,11,3,4,8,5,6,11,10,9,12)\n->"
+        )
+        .strip()
+        .split(",")
+    )
 
     # Check input
     if len(values) != 19:
@@ -42,36 +48,57 @@ def setup_values() -> List[str]:
     return values
 
 
+def manual_setup() -> Tuple[List[str], List[str]]:
+    resources = setup_resources()
+    if not resources:
+        return [], []
+    display_board_with_resources(resources)
+
+    values = setup_values()
+    if not values:
+        return [], []
+    display_board_with_values(resources, values)
+    return resources, values
+
+
+def automatic_setup(file) -> Tuple[List[str], List[str]]:
+    resources = []
+    values = []
+    board_color_map = {
+        v["board_color"]: {"code": k, "color": v["color"]}
+        for k, v in resources_map.items()
+    }
+
+    crop_image(file)
+    for i in range(19):
+        tile = parse_image_data(f"{tile_images_path}/tile_{i+1}.png")
+        print(
+            "Tile:{} {} {}".format(
+                i + 1,
+                tile["value"],
+                colored(tile["color"], board_color_map[tile["color"]]["color"]),
+            )
+        )
+        resources.append(board_color_map[tile["color"]]["code"])
+        values.append(tile["value"])
+    display_board_with_values(resources, values)
+    return resources, values
+
+
 @click.command()
 @click.option(
     "--file", type=click.Path(), default=None, help="Path to the input file (optional)"
 )
-def main(file):
+def start(file) -> None:
     if file:
-        crop_image(file)
-        # sys.exit(0)
-        resources = []
-        values = []
-        board_color_map = {v["board_color"]: k for k, v in resources_map.items()}
-
-        for i in range(19):
-            tile = parse_image_data(f"{tile_images_path}/tile_{i+1}.png")
-            resources.append(board_color_map[tile["color"]])
-            values.append(tile["value"])
-        display_board_with_values(resources, values)
+        resources, values = automatic_setup(file)
     else:
-        resources = setup_resources()
-        if not resources:
-            sys.exit(1)
-        display_board_with_resources(resources)
+        resources, values = manual_setup()
 
-        values = setup_values()
-        if not values:
-            sys.exit(1)
-        display_board_with_values(resources, values)
-
-    play(resources, values)
+    if not resources or not values:
+        return 1
+    return play(resources, values)
 
 
 if __name__ == "__main__":
-    main()
+    start()
