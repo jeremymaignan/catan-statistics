@@ -7,7 +7,7 @@ from board import display_board_with_resources, display_board_with_values
 from config import resources_map, tile_images_path
 from game import play
 from services.image import crop_image
-from services.openai import parse_image_data
+from services.openai import OpenAIClient
 
 
 def setup_resources() -> Optional[List[str]]:
@@ -70,8 +70,9 @@ def automatic_setup(file) -> Tuple[List[str], List[str]]:
     }
 
     crop_image(file)
+    OpenAI = OpenAIClient()
     for i in range(19):
-        tile = parse_image_data(f"{tile_images_path}/tile_{i+1}.png")
+        tile = OpenAI.parse_image_data(f"{tile_images_path}/tile_{i+1}.png")
         print(
             "Tile:{} {} {}".format(
                 i + 1,

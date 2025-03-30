@@ -2,7 +2,7 @@ from termcolor import colored
 
 settlements_positions = list("abcdefghijklmnopqrstuvwxyz1ABCDEFGHIJKLMNOPQRSTUVWXYZ2")
 settlements_icon = colored("Δ", "yellow", attrs=["bold"])
-tile_images_path = "tmp"
+tile_images_path = "tiles"
 
 resources_map = {
     "wo": {"text": "Wood ", "color": "green", "board_color": "dark green"},

@@ -1,5 +1,5 @@
 __pycache__/
 .DS_Store
-tmp/
+tiles/
 *.pyc
 services/__pycache__/
