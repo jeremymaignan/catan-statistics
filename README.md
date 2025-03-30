@@ -30,17 +30,18 @@ pip install -r requirements.txt
 3. Start the program with the `--file` flag:
 
    ```sh
-   python3 main.py --file board.png
+   python3 catan_helper.py --file board.png
    ```
 
    The resources and values will be parsed by OpenAI, and your full board will be displayed.
+   ![Screenshot](https://github.com/jeremymaignan/catan-statistics/blob/main/assets/openai_board_parsing.png)
 
 ### Option 2: Manual Input of Resources and Values
 
 1. Start the program:
 
    ```sh
-   python3 main.py
+   python3 catan_helper.py
    ```
 2. Enter the resources for each tile of the board.
 
