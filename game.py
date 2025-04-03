@@ -2,36 +2,40 @@ from typing import Any, List
 
 from termcolor import colored
 
-from board import display_full_board
-from config import dice_probability, indexes, resources_map
+from board import display_full_board, display_probabilities
+from config import (adjacent_settlement_positions, dice_probability, indexes,
+                    resources_map)
 from models.probability import Probability
 
 
 def play(resources: List[str], values: List[str]) -> None:
     settlements = ""
+    blocked_positions = ""
 
     while True:
         # Input new settlements positions
-        new_settlement = input("Enter your settlements positions: ").strip()
+        new_settlements = input("Enter your settlements positions: ").strip()
 
-        if new_settlement == ".":
-            for key, value in dice_probability.items():
-                if key == 0:
-                    continue
-                print(
-                    "[{}]:\t{}\t{}/36\t{}%".format(
-                        colored(key, value[2]),
-                        round(value[0], 3),
-                        value[1],
-                        int(value[1] * 100 / 36),
-                    )
-                )
+        if new_settlements == ".":
+            display_probabilities()
             continue
-        if new_settlement in settlements:
-            print("Settlement already added.")
+
+        # Check if input is valid
+        new_valid_settlements = ""
+        for settlement in new_settlements:
+            if settlement in settlements:
+                print(f"Settlement {settlement} already added.")
+                continue
+            if settlement in blocked_positions:
+                print(f"Position {settlement} not available.")
+                continue
+            new_valid_settlements += settlement
+            blocked_positions += adjacent_settlement_positions[settlement]
+
+        if not new_valid_settlements:
             continue
-        settlements += new_settlement
-        display_full_board(resources, values, settlements)
+        settlements += new_valid_settlements
+        display_full_board(resources, values, settlements, blocked_positions)
 
         # List resources per dice value
         # Calculate probabilities per resource

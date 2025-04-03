@@ -2,7 +2,7 @@ from typing import List
 
 from termcolor import colored
 
-from config import (indexes, resources_map, settlements_icon,
+from config import (dice_probability, resources_map, settlements_icon,
                     settlements_positions)
 
 map_resouces = """
@@ -111,12 +111,18 @@ def display_board_with_values(resources: List[str], values: List[str]):
 
 
 def display_full_board(
-    resources: List[str], values: List[str], settlements: str
+    resources: List[str], values: List[str], settlements: str, blocked_positions: str
 ):  # Display current map
-    settlements_position = [
-        settlements_positions[i] if x not in settlements else settlements_icon
-        for i, x in enumerate(indexes.keys())
-    ]
+    settlements_position = []
+
+    for post in settlements_positions:
+        if post in settlements:
+            settlements_position.append(settlements_icon)
+        elif post in blocked_positions:
+            settlements_position.append("-")
+        else:
+            settlements_position.append(post)
+
     formated_values = ["{} ".format(x) if int(x) <= 9 else x for x in values]
     colored_resources = [
         colored(resources_map[x]["text"], resources_map[x]["color"]) for x in resources
@@ -140,3 +146,17 @@ def display_full_board(
         + settlements_position[47:]
     )
     print(map_resources_and_values_and_angles.format(*display))
+
+
+def display_probabilities():
+    for key, value in dice_probability.items():
+        if key == 0:
+            continue
+        print(
+            "[{}]:\t{}\t{}/36\t{}%".format(
+                colored(key, value[2]),
+                round(value[0], 3),
+                value[1],
+                int(value[1] * 100 / 36),
+            )
+        )

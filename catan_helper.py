@@ -90,9 +90,13 @@ def automatic_setup(file) -> Tuple[List[str], List[str]]:
 @click.option(
     "--file", type=click.Path(), default=None, help="Path to the input file (optional)"
 )
-def start(file) -> None:
+@click.option("--verbose", is_flag=True, help="Enable verbose output")
+def start(file, verbose) -> None:
     if file:
         resources, values = automatic_setup(file)
+        if verbose:
+            print("Resources: ", resources)
+            print("Values: ", values)
     else:
         resources, values = manual_setup()
 
