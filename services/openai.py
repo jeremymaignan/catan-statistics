@@ -65,6 +65,8 @@ class OpenAIClient:
         try:
             response = self.client.chat.completions.create(
                 model=self.model,
+                temperature=0,
+                top_p=1,
                 messages=[
                     {
                         "role": "user",

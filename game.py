@@ -20,21 +20,29 @@ def play(resources: List[str], values: List[str]) -> None:
             display_probabilities()
             continue
 
-        # Check if input is valid
-        new_valid_settlements = ""
-        for settlement in new_settlements:
-            if settlement in settlements:
-                print(f"Settlement {settlement} already added.")
-                continue
-            if settlement in blocked_positions:
-                print(f"Position {settlement} not available.")
-                continue
-            new_valid_settlements += settlement
-            blocked_positions += adjacent_settlement_positions[settlement]
+        elif len(new_settlements) == 2 and new_settlements[0] == "-":
+            settlements = settlements.replace(new_settlements[1], "")
+            for unblock_position in adjacent_settlement_positions[new_settlements[1]]:
+                blocked_positions.replace(unblock_position, "")
+            print(f"Settlement {new_settlements[1]} removed.", settlements)
 
-        if not new_valid_settlements:
-            continue
-        settlements += new_valid_settlements
+        else:
+            # Check if input is valid
+            new_valid_settlements = ""
+            for settlement in new_settlements:
+                if settlement in settlements:
+                    print(f"Settlement {settlement} already added.")
+                    continue
+                if settlement in blocked_positions:
+                    print(f"Position {settlement} not available.")
+                    continue
+                new_valid_settlements += settlement
+                blocked_positions += adjacent_settlement_positions[settlement]
+
+            if not new_valid_settlements:
+                continue
+            settlements += new_valid_settlements
+
         display_full_board(resources, values, settlements, blocked_positions)
 
         # List resources per dice value
@@ -50,7 +58,7 @@ def play(resources: List[str], values: List[str]) -> None:
                 if value not in proba_per_dice_value:
                     proba_per_dice_value[value] = []
                 proba_per_dice_value[value].append(
-                    colored(resource["text"], resource["color"])
+                    colored(resource["text"].strip(), resource["color"])
                 )
 
                 if resources[case - 1] not in proba_per_resource:

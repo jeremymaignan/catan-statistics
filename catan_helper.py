@@ -11,13 +11,13 @@ from services.openai import OpenAIClient
 
 
 def setup_resources() -> Optional[List[str]]:
-    resources = (
-        input(
-            "Enter resources: (Wood, Brick, Ore, Sheep, Wheat, Robber)\n(ex: o,r,wo,w,b,wo,b,w,s,b,s,s,wo,o,wo,w,o,w,s)\n->"
-        )
-        .strip()
-        .split(",")
-    )
+    raw_input = input(
+        "Enter resources (Wood, Brick, Ore, Sheep, Wheat, Robber):\n"
+        "Example: o,r,wo,w,b,wo,b,w,s,b,s,s,wo,o,wo,w,o,w,s\n-> "
+    ).strip()
+    resources = [
+        r.strip().lower() for r in raw_input.replace("'", "").split(",") if r.strip()
+    ]
 
     # Check input
     if len(resources) != 19:
@@ -32,13 +32,11 @@ def setup_resources() -> Optional[List[str]]:
 
 
 def setup_values() -> Optional[List[str]]:
-    values = (
-        input(
-            "Enter values: (0 for the robber)\n(ex: 2,0,5,6,9,10,8,3,4,11,3,4,8,5,6,11,10,9,12)\n->"
-        )
-        .strip()
-        .split(",")
-    )
+    raw_input = input(
+        "Enter values (0 for the robber):\n"
+        "Example: 2,0,5,6,9,10,8,3,4,11,3,4,8,5,6,11,10,9,12\n-> "
+    ).strip()
+    values = [v for v in raw_input.replace("'", "").split(",") if v.strip()]
 
     # Check input
     if len(values) != 19:
