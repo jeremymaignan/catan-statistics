@@ -1,0 +1,7 @@
+flask==3.1.0
+flask-cors==5.0.1
+pymongo==4.11.3
+gunicorn==23.0.0
+opencv-python-headless==4.11.0.86
+openai==1.75.0
+numpy==2.2.4
