@@ -345,6 +345,7 @@ const styles = {
     padding: '24px 12px',
     maxWidth: 1400,
     margin: '0 auto',
+    overflowX: 'hidden',
   },
   error: {
     background: 'var(--error-bg)',

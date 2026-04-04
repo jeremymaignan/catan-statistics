@@ -170,16 +170,19 @@
   display: flex;
   gap: 24px;
   flex-wrap: wrap;
+  overflow: hidden;
 }
 
 .board-section {
   flex: 1 1 620px;
   min-width: 0;
+  max-width: 100%;
 }
 
 .stats-section {
   flex: 0 0 380px;
   min-width: 0;
+  max-width: 100%;
 }
 
 /* Setup form layout */
@@ -236,10 +239,12 @@
 
   .board-section {
     flex: 1 1 auto;
+    width: 100%;
   }
 
   .stats-section {
     flex: 1 1 auto;
+    width: 100%;
   }
 }
 
