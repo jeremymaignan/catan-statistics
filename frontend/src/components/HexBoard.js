@@ -81,7 +81,31 @@ function dotsForRate(rate) {
   return '\u2022'.repeat(rate);
 }
 
-export default function HexBoard({ tiles, positions, onPositionClick, onTileClick }) {
+// Colors for port types
+const PORT_COLORS = {
+  '3:1': { fill: '#fff', stroke: '#6d4c41', text: '#4e342e' },
+  'wo_port': { fill: '#1b5e20', stroke: '#1b5e20', text: '#fff' },
+  'b_port': { fill: '#a0522d', stroke: '#a0522d', text: '#fff' },
+  'o_port': { fill: '#9e9e9e', stroke: '#757575', text: '#fff' },
+  's_port': { fill: '#aed581', stroke: '#7cb342', text: '#33691e' },
+  'w_port': { fill: '#fdd835', stroke: '#f9a825', text: '#4e342e' },
+};
+
+const PORT_EMOJI_LABELS = {
+  '3:1': '3:1',
+  'wo_port': '\u{1F332} Wood', 'b_port': '\u{1F9F1} Brick', 'o_port': '\u{26F0}\uFE0F Ore',
+  's_port': '\u{1F411} Sheep', 'w_port': '\u{1F33E} Wheat',
+};
+
+// Compute board center for outward direction
+const BOARD_CENTER = (() => {
+  const centers = Object.values(TILE_CENTERS);
+  const cx = centers.reduce((s, c) => s + c.x, 0) / centers.length;
+  const cy = centers.reduce((s, c) => s + c.y, 0) / centers.length;
+  return { x: cx, y: cy };
+})();
+
+export default function HexBoard({ tiles, positions, ports, onPositionClick, onTileClick }) {
   const [hoveredPos, setHoveredPos] = useState(null);
   const [tooltipData, setTooltipData] = useState(null);
 
@@ -111,22 +135,22 @@ export default function HexBoard({ tiles, positions, onPositionClick, onTileClic
 
   // Calculate tooltip position (keep within SVG bounds)
   const getTooltipPos = (pixel) => {
-    const tooltipW = 160;
+    const tooltipW = 130;
     const tooltipH = 120;
     let tx = pixel.x + 18;
     let ty = pixel.y - tooltipH / 2;
 
     // If too far right, flip to left side
-    if (tx + tooltipW > 840) tx = pixel.x - tooltipW - 18;
+    if (tx + tooltipW > 880) tx = pixel.x - tooltipW - 18;
     // Keep within vertical bounds
-    if (ty < 10) ty = 10;
-    if (ty + tooltipH > 670) ty = 670 - tooltipH;
+    if (ty < -10) ty = -10;
+    if (ty + tooltipH > 700) ty = 700 - tooltipH;
 
     return { x: tx, y: ty };
   };
 
   return (
-    <svg viewBox="0 0 860 690" className="hex-board-svg">
+    <svg viewBox="-40 -20 940 740" className="hex-board-svg">
       <defs>
         <filter id="hexShadow" x="-10%" y="-10%" width="120%" height="120%">
           <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#4e342e" floodOpacity="0.15" />
@@ -136,6 +160,9 @@ export default function HexBoard({ tiles, positions, onPositionClick, onTileClic
         </filter>
         <filter id="tooltipShadow" x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="#000" floodOpacity="0.2" />
+        </filter>
+        <filter id="port-shadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="1" stdDeviation="2" floodOpacity="0.2" />
         </filter>
       </defs>
 
@@ -208,6 +235,88 @@ export default function HexBoard({ tiles, positions, onPositionClick, onTileClic
         );
       })}
 
+      {/* Draw ports */}
+      {ports && ports.map((port) => {
+        if (port.type === 'none') return null;
+        const pA = getSettlementPixel(port.positions[0]);
+        const pB = getSettlementPixel(port.positions[1]);
+        if (!pA || !pB) return null;
+
+        // Midpoint of the edge
+        const midX = (pA.x + pB.x) / 2;
+        const midY = (pA.y + pB.y) / 2;
+
+        // Perpendicular bisector direction (ensures equal distance to both vertices)
+        const edgeDx = pB.x - pA.x;
+        const edgeDy = pB.y - pA.y;
+        const perpX = -edgeDy;
+        const perpY = edgeDx;
+        const toCenterX = BOARD_CENTER.x - midX;
+        const toCenterY = BOARD_CENTER.y - midY;
+        const dot = perpX * toCenterX + perpY * toCenterY;
+        const sign = dot < 0 ? 1 : -1;
+        const perpLen = Math.sqrt(perpX * perpX + perpY * perpY) || 1;
+        const nx = sign * perpX / perpLen;
+        const ny = sign * perpY / perpLen;
+        const dist = 55;
+        const badgeX = midX + nx * dist;
+        const badgeY = midY + ny * dist;
+
+        const colors = PORT_COLORS[port.type] || PORT_COLORS['3:1'];
+        const label = PORT_EMOJI_LABELS[port.type] || port.text.replace(' 2:1', '');
+        const sublabel = port.type !== '3:1' ? '2:1' : '';
+
+        return (
+          <g key={`port-${port.index}`}>
+            {/* Lines from each vertex to the badge */}
+            <line x1={pA.x} y1={pA.y} x2={badgeX} y2={badgeY} stroke={colors.stroke} strokeWidth="2" strokeLinecap="round" opacity="0.6" />
+            <line x1={pB.x} y1={pB.y} x2={badgeX} y2={badgeY} stroke={colors.stroke} strokeWidth="2" strokeLinecap="round" opacity="0.6" />
+            {/* Dots on vertices */}
+            <circle cx={pA.x} cy={pA.y} r="5" fill={colors.stroke} opacity="0.8" />
+            <circle cx={pB.x} cy={pB.y} r="5" fill={colors.stroke} opacity="0.8" />
+            {/* Port pill badge */}
+            <rect
+              x={badgeX - 40}
+              y={badgeY - (sublabel ? 22 : 14)}
+              width="80"
+              height={sublabel ? 46 : 28}
+              rx="14"
+              fill={colors.fill}
+              stroke={colors.stroke}
+              strokeWidth="1.5"
+              filter="url(#port-shadow)"
+            />
+            <text
+              x={badgeX}
+              y={badgeY + (sublabel ? -7 : 0)}
+              textAnchor="middle"
+              dominantBaseline="central"
+              fontSize="13"
+              fontWeight="700"
+              fontFamily="'Inter', sans-serif"
+              fill={colors.text}
+            >
+              {label}
+            </text>
+            {sublabel && (
+              <text
+                x={badgeX}
+                y={badgeY + 14}
+                textAnchor="middle"
+                dominantBaseline="central"
+                fontSize="12"
+                fontWeight="600"
+                fontFamily="'Inter', sans-serif"
+                fill={colors.text}
+                opacity="0.8"
+              >
+                {sublabel}
+              </text>
+            )}
+          </g>
+        );
+      })}
+
       {/* Draw settlement positions */}
       {positions && Object.entries(positions).map(([pos, info]) => {
         const pixel = getSettlementPixel(pos);
@@ -229,7 +338,7 @@ export default function HexBoard({ tiles, positions, onPositionClick, onTileClic
           >
             {status === 'colony' ? (
               <>
-                <rect x={pixel.x - 13} y={pixel.y - 13} width="26" height="26" rx="5" fill="#f9a825" stroke="#f57f17" strokeWidth="2" />
+                <rect x={pixel.x - 13} y={pixel.y - 13} width="26" height="26" rx="5" fill="#7b1fa2" stroke="#6a1b9a" strokeWidth="2" />
                 <text x={pixel.x} y={pixel.y + 1} textAnchor="middle" dominantBaseline="middle" fontSize="13" fill="white" fontWeight="bold">
                   {'\u25B2'}
                 </text>
@@ -280,7 +389,7 @@ export default function HexBoard({ tiles, positions, onPositionClick, onTileClic
         const rowHeight = 20;
         const headerH = 28;
         const footerH = 22;
-        const tooltipW = 155;
+        const tooltipW = 130;
         const tooltipH = headerH + nonDesert.length * rowHeight + footerH + 4;
         const tp = getTooltipPos(pixel);
 
@@ -306,7 +415,7 @@ export default function HexBoard({ tiles, positions, onPositionClick, onTileClic
               fontFamily="'Inter', sans-serif"
               fill="#4e342e"
             >
-              Rank #{info.rank} — Score {info.score}
+              {`Rank #${info.rank}  \u00B7  Score ${info.score}`}
             </text>
             <line x1={tp.x + 8} y1={tp.y + headerH} x2={tp.x + tooltipW - 8} y2={tp.y + headerH} stroke="#ede7e0" strokeWidth="1" />
 
@@ -332,28 +441,16 @@ export default function HexBoard({ tiles, positions, onPositionClick, onTileClic
                   </text>
                   {/* Dice value */}
                   <text
-                    x={tp.x + 90}
+                    x={tp.x + tooltipW - 14}
                     y={ry + 9}
                     dominantBaseline="central"
-                    textAnchor="middle"
+                    textAnchor="end"
                     fontSize="11"
                     fontWeight="700"
                     fontFamily="'Inter', sans-serif"
                     fill={tile.has_robber ? '#bbb' : (tile.value === 6 || tile.value === 8) ? '#c62828' : '#5d4037'}
                   >
                     {tile.value}
-                  </text>
-                  {/* Dots */}
-                  <text
-                    x={tp.x + 105}
-                    y={ry + 9}
-                    dominantBaseline="central"
-                    fontSize="9"
-                    fontFamily="'Inter', sans-serif"
-                    fill={tile.has_robber ? '#ccc' : '#8d6e63'}
-                    letterSpacing="-1"
-                  >
-                    {dotsForRate(tile.rate)}
                   </text>
                 </g>
               );

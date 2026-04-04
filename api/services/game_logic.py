@@ -1,7 +1,10 @@
 from api.config import (
     ADJACENT_SETTLEMENT_POSITIONS,
+    DEFAULT_PORTS,
     DICE_PROBABILITY,
     INDEXES,
+    PORT_EDGES,
+    PORT_TYPES,
     RESOURCES_MAP,
     SETTLEMENTS_POSITIONS,
 )
@@ -340,12 +343,27 @@ def get_board_state(game):
         sorted(scarcity.items(), key=lambda x: x[1]["total_rate"], reverse=True)
     )
 
+    # Build port data
+    port_types_list = game.get("ports", DEFAULT_PORTS)
+    ports = []
+    for i, (pos_a, pos_b) in enumerate(PORT_EDGES):
+        port_code = port_types_list[i] if i < len(port_types_list) else "none"
+        port_info = PORT_TYPES.get(port_code, PORT_TYPES["none"])
+        ports.append({
+            "index": i,
+            "type": port_code,
+            "text": port_info["text"],
+            "color": port_info.get("color"),
+            "positions": [pos_a, pos_b],
+        })
+
     return {
         "tiles": tiles,
         "positions": positions,
         "settlements": settlements,
         "blocked_positions": blocked_positions,
         "robber_tile": robber_tile,
+        "ports": ports,
         "statistics": stats,
         "points": points,
         "board_scarcity": board_scarcity,

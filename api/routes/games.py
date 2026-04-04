@@ -1,7 +1,7 @@
 from bson import ObjectId
 from flask import Blueprint, current_app, jsonify, request
 
-from api.config import DICE_PROBABILITY, SETTLEMENTS_POSITIONS
+from api.config import DICE_PROBABILITY, PORT_TYPES, SETTLEMENTS_POSITIONS
 from api.models.game import new_game
 from api.services.game_logic import (
     add_settlement,
@@ -46,7 +46,15 @@ def create_game():
         except ValueError:
             return jsonify({"error": f"Invalid value: {v}"}), 400
 
-    game = new_game(resources, [str(v) for v in values])
+    ports = data.get("ports", None)
+    if ports is not None:
+        if len(ports) != 9:
+            return jsonify({"error": "Exactly 9 ports required"}), 400
+        for p in ports:
+            if p not in PORT_TYPES:
+                return jsonify({"error": f"Invalid port type: {p}"}), 400
+
+    game = new_game(resources, [str(v) for v in values], ports=ports)
     result = get_db().games.insert_one(game)
 
     return jsonify({
@@ -196,7 +204,7 @@ def clone_game(game_id):
     if not game:
         return jsonify({"error": "Game not found"}), 404
 
-    clone = new_game(list(game["resources"]), list(game["values"]))
+    clone = new_game(list(game["resources"]), list(game["values"]), ports=list(game.get("ports", [])) or None)
     result = get_db().games.insert_one(clone)
 
     return jsonify({

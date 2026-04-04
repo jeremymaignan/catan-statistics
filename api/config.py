@@ -65,6 +65,36 @@ ADJACENT_SETTLEMENT_POSITIONS = {
     "Y": "QXZ", "Z": "2Y", "2": "SZ",
 }
 
+# Port types
+PORT_TYPES = {
+    "3:1": {"text": "3:1", "color": "#fff"},
+    "wo_port": {"text": "Wood 2:1", "resource": "wo", "color": "#1b5e20"},
+    "b_port": {"text": "Brick 2:1", "resource": "b", "color": "#a0522d"},
+    "o_port": {"text": "Ore 2:1", "resource": "o", "color": "#9e9e9e"},
+    "s_port": {"text": "Sheep 2:1", "resource": "s", "color": "#aed581"},
+    "w_port": {"text": "Wheat 2:1", "resource": "w", "color": "#fdd835"},
+    "none": {"text": "None", "color": None},
+}
+
+# 9 port edges on the board perimeter.
+# Each port connects two adjacent coastal settlement positions.
+# Order: clockwise from top-left, evenly spaced around perimeter.
+# Perimeter has 30 edges; ports at roughly every 3-4 edges.
+PORT_EDGES = [
+    ("a", "b"),   # top-left (top of tile 1)
+    ("d", "e"),   # top (top of tile 2)
+    ("o", "p"),   # top-right (between tile 3 and tile 7)
+    ("1", "K"),   # right (right of tile 12)
+    ("S", "T"),   # bottom-right (bottom of tile 16)
+    ("X", "Y"),   # bottom (bottom of tile 18)
+    ("U", "V"),   # bottom-left (bottom of tile 17)
+    ("B", "L"),   # left (between tile 8/13)
+    ("h", "r"),   # left (between tile 4 and tile 8)
+]
+
+# Default port layout (standard Catan)
+DEFAULT_PORTS = ["3:1", "wo_port", "3:1", "o_port", "3:1", "s_port", "3:1", "b_port", "w_port"]
+
 # Color mapping from OpenAI vision output to resource codes
 COLOR_TO_RESOURCE = {
     "dark green": "wo",

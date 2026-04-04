@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import HexBoard from './components/HexBoard';
 import SetupForm from './components/SetupForm';
 import StatsPanel from './components/StatsPanel';
+import TradingCard from './components/TradingCard';
+import ScarcityCard from './components/ScarcityCard';
+import SettlementsCard from './components/SettlementsCard';
 import { createGame, createGameFromImage, getGame, cycleSettlement, moveRobber, cloneGame } from './api';
 import './responsive.css';
 
@@ -55,11 +58,11 @@ export default function App() {
     updateUrl(id);
   };
 
-  const handleCreateGame = async (resources, values) => {
+  const handleCreateGame = async (resources, values, ports) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await createGame(resources, values);
+      const data = await createGame(resources, values, ports);
       if (data.error) throw new Error(data.error);
       saveGameId(data.id);
       const state = await getGame(data.id);
@@ -180,22 +183,38 @@ export default function App() {
               <HexBoard
                 tiles={boardState.tiles}
                 positions={boardState.positions}
+                ports={boardState.ports}
                 onPositionClick={handlePositionClick}
                 onTileClick={handleTileClick}
               />
               <p style={styles.hint}>
-                Vertices: <span style={{ color: '#43a047', fontWeight: 600 }}>empty</span> &rarr; colony &rarr; city &rarr; removed
+                Vertices: <span style={{ color: '#43a047', fontWeight: 600 }}>empty</span> &rarr; <span style={{ color: '#7b1fa2', fontWeight: 600 }}>colony</span> &rarr; <span style={{ color: '#1565c0', fontWeight: 600 }}>city</span> &rarr; removed
                 <span style={{ margin: '0 10px', color: '#d7ccc8' }}>|</span>
                 Tiles: click to place/remove robber
               </p>
             </div>
             <div className="stats-section">
-              <StatsPanel
-                statistics={boardState.statistics}
+              <SettlementsCard
                 settlements={boardState.settlements}
                 points={boardState.points}
-                boardScarcity={boardState.board_scarcity}
               />
+              <div style={{ marginTop: 16 }}>
+                <StatsPanel
+                  statistics={boardState.statistics}
+                  settlements={boardState.settlements}
+                />
+              </div>
+              <div style={{ marginTop: 16 }}>
+                <TradingCard
+                  ports={boardState.ports}
+                  settlements={boardState.settlements}
+                />
+              </div>
+              <div style={{ marginTop: 16 }}>
+                <ScarcityCard
+                  boardScarcity={boardState.board_scarcity}
+                />
+              </div>
             </div>
           </div>
         ) : (

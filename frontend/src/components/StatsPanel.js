@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
 
+const RESOURCE_EMOJIS = {
+  wo: '\u{1F332}', b: '\u{1F9F1}', o: '\u{26F0}\uFE0F',
+  s: '\u{1F411}', w: '\u{1F33E}',
+};
+
 const DICE_PROBABILITIES = [
   { roll: 2,  combos: 1,  proba: '2.78%',  dots: 1 },
   { roll: 3,  combos: 2,  proba: '5.56%',  dots: 2 },
@@ -14,7 +19,7 @@ const DICE_PROBABILITIES = [
   { roll: 12, combos: 1,  proba: '2.78%',  dots: 1 },
 ];
 
-export default function StatsPanel({ statistics, settlements, points, boardScarcity }) {
+export default function StatsPanel({ statistics, settlements }) {
   const [showDiceModal, setShowDiceModal] = useState(false);
 
   if (!statistics) return null;
@@ -168,7 +173,7 @@ export default function StatsPanel({ statistics, settlements, points, boardScarc
                         <td style={styles.td}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                             <span style={{ ...styles.resColorDot, backgroundColor: isBlocked ? '#ccc' : info.color }} />
-                            <span style={{ fontWeight: 600, color: '#4e342e', ...blockedStyle }}>{info.text}</span>
+                            <span style={{ fontWeight: 600, color: '#4e342e', ...blockedStyle }}>{RESOURCE_EMOJIS[code] || ''} {info.text}</span>
                           </div>
                         </td>
                         <td style={{ ...styles.td, fontVariantNumeric: 'tabular-nums', ...blockedStyle }}>{info.proba.toFixed(3)}</td>
@@ -195,89 +200,9 @@ export default function StatsPanel({ statistics, settlements, points, boardScarc
             </div>
           </div>
 
-          {/* Settlements list */}
-          <div style={styles.section}>
-            {(() => {
-              const colonyCount = Object.values(settlements).filter(t => t === 'colony').length;
-              const cityCount = Object.values(settlements).filter(t => t === 'city').length;
-              return (
-                <div style={styles.settlementGrid}>
-                  <div style={styles.settlementCard}>
-                    <div style={styles.settlementHeader}>
-                      <span style={{ ...styles.settlementIcon, background: '#f9a825', borderRadius: 5 }}>{'\u25B2'}</span>
-                      <span style={styles.settlementLabel}>Colonies</span>
-                    </div>
-                    <span style={{ ...styles.settlementCount, color: colonyCount > 5 ? '#c62828' : '#4e342e' }}>
-                      {colonyCount}<span style={styles.settlementMax}>/5</span>
-                    </span>
-                  </div>
-                  <div style={styles.settlementCard}>
-                    <div style={styles.settlementHeader}>
-                      <span style={{ ...styles.settlementIcon, background: '#1565c0', borderRadius: 5 }}>{'\u2605'}</span>
-                      <span style={styles.settlementLabel}>Cities</span>
-                    </div>
-                    <span style={{ ...styles.settlementCount, color: cityCount > 4 ? '#c62828' : '#4e342e' }}>
-                      {cityCount}<span style={styles.settlementMax}>/4</span>
-                    </span>
-                  </div>
-                  <div style={styles.pointsCard}>
-                    <span style={styles.pointsLabel}>Points</span>
-                    <span style={styles.pointsValue}>{points}</span>
-                  </div>
-                </div>
-              );
-            })()}
-          </div>
         </>
       )}
 
-      {/* Board scarcity - always visible, at bottom */}
-      {boardScarcity && Object.keys(boardScarcity).length > 0 && (() => {
-        const entries = Object.entries(boardScarcity).sort((a, b) => b[1].total_rate - a[1].total_rate);
-        const maxRate = Math.max(...entries.map(([, v]) => v.total_rate));
-        return (
-          <div style={{ marginTop: hasStats ? 0 : 20 }}>
-            <div style={styles.tableWrap}>
-              <table style={styles.table}>
-                <thead>
-                  <tr>
-                    <th style={styles.th}>Resource</th>
-                    <th style={styles.th}>Tiles</th>
-                    <th style={styles.th}>Rate</th>
-                    <th style={{ ...styles.th, width: 100 }}>Availability</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {entries.map(([code, info]) => (
-                    <tr key={code}>
-                      <td style={styles.td}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <span style={{ ...styles.resColorDot, backgroundColor: info.color }} />
-                          <span style={{ fontWeight: 600, color: '#4e342e' }}>{info.text}</span>
-                        </div>
-                      </td>
-                      <td style={{ ...styles.td, fontVariantNumeric: 'tabular-nums' }}>{info.tile_count}</td>
-                      <td style={{ ...styles.td, fontVariantNumeric: 'tabular-nums' }}>{info.total_rate}/36</td>
-                      <td style={styles.td}>
-                        <div style={styles.percentCell}>
-                          <div style={styles.percentBar}>
-                            <div style={{
-                              ...styles.percentFill,
-                              width: `${(info.total_rate / maxRate) * 100}%`,
-                              backgroundColor: info.board_color,
-                              opacity: 0.7,
-                            }} />
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        );
-      })()}
     </div>
   );
 }
@@ -468,76 +393,6 @@ const styles = {
     fontVariantNumeric: 'tabular-nums',
     minWidth: 32,
     textAlign: 'right',
-    color: '#4e342e',
-  },
-  settlementGrid: {
-    display: 'flex',
-    gap: 8,
-  },
-  settlementCard: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: 6,
-    padding: '10px 8px',
-    borderRadius: 10,
-    background: '#faf8f5',
-    border: '1px solid #f0ebe5',
-  },
-  settlementHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 5,
-  },
-  settlementIcon: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 20,
-    height: 20,
-    borderRadius: '50%',
-    color: 'white',
-    fontSize: 10,
-    fontWeight: 'bold',
-  },
-  settlementLabel: {
-    fontSize: 11,
-    color: '#8d6e63',
-    fontWeight: 600,
-    textTransform: 'uppercase',
-    letterSpacing: '0.3px',
-  },
-  settlementCount: {
-    fontSize: 22,
-    fontWeight: 800,
-  },
-  settlementMax: {
-    fontSize: 14,
-    fontWeight: 400,
-    color: '#bcaaa4',
-  },
-  pointsCard: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: 6,
-    padding: '10px 8px',
-    borderRadius: 10,
-    background: '#faf8f5',
-    border: '2px solid #6d4c41',
-  },
-  pointsLabel: {
-    fontSize: 11,
-    color: '#6d4c41',
-    fontWeight: 600,
-    textTransform: 'uppercase',
-    letterSpacing: '0.3px',
-  },
-  pointsValue: {
-    fontSize: 26,
-    fontWeight: 800,
     color: '#4e342e',
   },
 };

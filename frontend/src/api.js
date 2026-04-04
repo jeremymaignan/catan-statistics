@@ -1,10 +1,10 @@
 const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5001';
 
-export async function createGame(resources, values) {
+export async function createGame(resources, values, ports) {
   const res = await fetch(`${API_BASE}/api/games`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ resources, values }),
+    body: JSON.stringify({ resources, values, ports }),
   });
   return res.json();
 }

@@ -1,5 +1,35 @@
+# Python
 __pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+venv/
+.venv/
+
+# Node / Frontend
+node_modules/
+frontend/build/
+.eslintcache
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
 .DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Project specific
 tiles/
-*.pyc
-services/__pycache__/
+/tmp/
