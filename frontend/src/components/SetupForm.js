@@ -222,9 +222,9 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
             Manual Setup
           </button>
           <button
-            style={{ ...styles.modeBtn, ...(mode === 'image' ? styles.modeActive : {}) }}
-            onClick={() => setMode('image')}
+            style={{ ...styles.modeBtn, ...styles.modeDisabled }}
             type="button"
+            disabled
           >
             From Picture <span style={styles.comingSoon}>coming soon</span>
           </button>
@@ -377,6 +377,10 @@ const styles = {
     background: 'white',
     color: '#4e342e',
     boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+  },
+  modeDisabled: {
+    opacity: 0.5,
+    cursor: 'not-allowed',
   },
   tileCard: {
     display: 'flex',

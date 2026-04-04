@@ -24,25 +24,7 @@ export default function StatsPanel({ statistics, settlements }) {
   const hasStats = settlements && Object.keys(settlements).length > 0;
 
   return (
-    <div style={styles.container}>
-      <div style={styles.titleRow}>
-        <h3 style={styles.title}>Statistics</h3>
-        <button
-          style={styles.diceBtn}
-          onClick={() => setShowDiceModal(true)}
-          title="Dice probabilities"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8d6e63" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="2" y="2" width="20" height="20" rx="3" />
-            <circle cx="8" cy="8" r="1.5" fill="#8d6e63" stroke="none" />
-            <circle cx="16" cy="8" r="1.5" fill="#8d6e63" stroke="none" />
-            <circle cx="8" cy="16" r="1.5" fill="#8d6e63" stroke="none" />
-            <circle cx="16" cy="16" r="1.5" fill="#8d6e63" stroke="none" />
-            <circle cx="12" cy="12" r="1.5" fill="#8d6e63" stroke="none" />
-          </svg>
-        </button>
-      </div>
-
+    <div>
       {/* Dice probability modal */}
       {showDiceModal && (
         <div style={styles.modalOverlay} onClick={() => setShowDiceModal(false)}>
@@ -199,44 +181,49 @@ export default function StatsPanel({ statistics, settlements }) {
         </>
       )}
 
+      <div style={styles.diceBtnRow}>
+        <button
+          style={styles.diceBtn}
+          onClick={() => setShowDiceModal(true)}
+          title="Dice probabilities"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8d6e63" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="3" />
+            <circle cx="8" cy="8" r="1.5" fill="#8d6e63" stroke="none" />
+            <circle cx="16" cy="8" r="1.5" fill="#8d6e63" stroke="none" />
+            <circle cx="8" cy="16" r="1.5" fill="#8d6e63" stroke="none" />
+            <circle cx="16" cy="16" r="1.5" fill="#8d6e63" stroke="none" />
+            <circle cx="12" cy="12" r="1.5" fill="#8d6e63" stroke="none" />
+          </svg>
+          <span style={styles.diceBtnText}>Dice probabilities</span>
+        </button>
+      </div>
     </div>
   );
 }
 
 const styles = {
-  container: {
-    padding: '16px 12px',
-    background: 'white',
-    borderRadius: 14,
-    border: '1px solid #e8e0d8',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-  },
-  titleRow: {
+  diceBtnRow: {
     display: 'flex',
-    alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    marginBottom: 16,
-  },
-  title: {
-    color: '#4e342e',
-    margin: 0,
-    textAlign: 'center',
-    fontSize: 18,
-    fontWeight: 700,
+    marginTop: 12,
   },
   diceBtn: {
     display: 'inline-flex',
     alignItems: 'center',
-    justifyContent: 'center',
-    width: 30,
-    height: 30,
+    gap: 6,
     border: '1px solid #e8e0d8',
     borderRadius: 8,
     background: '#faf8f5',
     cursor: 'pointer',
     transition: 'all 0.2s',
-    padding: 0,
+    padding: '4px 10px',
+    fontFamily: "'Inter', sans-serif",
+  },
+  diceBtnText: {
+    fontSize: 11,
+    fontWeight: 600,
+    color: '#8d6e63',
   },
   modalOverlay: {
     position: 'fixed',
@@ -244,7 +231,9 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.35)',
+    backgroundColor: 'rgba(0,0,0,0.15)',
+    backdropFilter: 'blur(8px)',
+    WebkitBackdropFilter: 'blur(8px)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',

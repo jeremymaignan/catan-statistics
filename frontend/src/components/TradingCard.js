@@ -12,8 +12,7 @@ export default function TradingCard({ ports, settlements }) {
   const hasAnyPort = Object.values(rates).some(r => r < 4);
 
   return (
-    <div style={styles.container}>
-      <h3 style={styles.title}>Trading Rates</h3>
+    <div>
       <div style={styles.grid}>
         {[...RESOURCES].sort((a, b) => rates[a.code] - rates[b.code]).map(res => {
           const rate = rates[res.code];
@@ -41,20 +40,6 @@ export default function TradingCard({ ports, settlements }) {
 }
 
 const styles = {
-  container: {
-    padding: '16px 12px',
-    background: 'white',
-    borderRadius: 14,
-    border: '1px solid #e8e0d8',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-  },
-  title: {
-    color: '#4e342e',
-    margin: '0 0 14px 0',
-    textAlign: 'center',
-    fontSize: 18,
-    fontWeight: 700,
-  },
   grid: {
     display: 'flex',
     flexDirection: 'column',

@@ -8,8 +8,7 @@ export default function ScarcityCard({ boardScarcity }) {
   const maxRate = Math.max(...entries.map(([, v]) => v.total_rate));
 
   return (
-    <div style={styles.container}>
-      <h3 style={styles.title}>Resource Availability</h3>
+    <div>
       <div style={styles.tableWrap}>
         <table style={styles.table}>
           <thead>
@@ -53,20 +52,6 @@ export default function ScarcityCard({ boardScarcity }) {
 }
 
 const styles = {
-  container: {
-    padding: '16px 12px',
-    background: 'white',
-    borderRadius: 14,
-    border: '1px solid #e8e0d8',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-  },
-  title: {
-    color: '#4e342e',
-    margin: '0 0 14px 0',
-    textAlign: 'center',
-    fontSize: 18,
-    fontWeight: 700,
-  },
   tableWrap: {
     borderRadius: 8,
     border: '1px solid #f0ebe5',

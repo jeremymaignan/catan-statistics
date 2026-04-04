@@ -6,6 +6,8 @@ import TradingCard from './components/TradingCard';
 import ScarcityCard from './components/ScarcityCard';
 import SettlementsCard from './components/SettlementsCard';
 import TipsCard from './components/TipsCard';
+import BoardLegend from './components/BoardLegend';
+import CollapsibleCard from './components/CollapsibleCard';
 import { createGame, createGameFromImage, getGame, cycleSettlement, moveRobber, cloneGame } from './api';
 import './responsive.css';
 
@@ -181,52 +183,60 @@ export default function App() {
         ) : boardState ? (
           <div className="game-layout">
             <div className="board-section">
-              <HexBoard
-                tiles={boardState.tiles}
-                positions={boardState.positions}
-                ports={boardState.ports}
-                onPositionClick={handlePositionClick}
-                onTileClick={handleTileClick}
-              />
-              <div className="board-hint" style={styles.hint}>
-                <span>
-                  Vertices: <span style={{ color: '#43a047', fontWeight: 600 }}>empty</span> &rarr; <span style={{ color: '#7b1fa2', fontWeight: 600 }}>colony</span> &rarr; <span style={{ color: '#1565c0', fontWeight: 600 }}>city</span> &rarr; <span style={{ color: '#212121', fontWeight: 600 }}>opponent</span> &rarr; removed
-                </span>
-                <span className="board-hint-separator" style={{ margin: '0 10px', color: '#d7ccc8' }}>|</span>
-                <span>Tiles: click to place/remove robber</span>
+              <div className="board-wrapper">
+                <HexBoard
+                  tiles={boardState.tiles}
+                  positions={boardState.positions}
+                  ports={boardState.ports}
+                  onPositionClick={handlePositionClick}
+                  onTileClick={handleTileClick}
+                />
+                <BoardLegend />
               </div>
             </div>
             <div className="stats-section">
-              <SettlementsCard
-                settlements={boardState.settlements}
-                points={boardState.points}
-              />
+              {boardState.settlements && Object.keys(boardState.settlements).length > 0 && (
+                <CollapsibleCard title="Settlements">
+                  <SettlementsCard
+                    settlements={boardState.settlements}
+                    points={boardState.points}
+                  />
+                </CollapsibleCard>
+              )}
               <div style={{ marginTop: 16 }}>
-                <TipsCard
-                  statistics={boardState.statistics}
-                  ports={boardState.ports}
-                  settlements={boardState.settlements}
-                  boardScarcity={boardState.board_scarcity}
-                  positions={boardState.positions}
-                  tiles={boardState.tiles}
-                />
+                <CollapsibleCard title="Tips">
+                  <TipsCard
+                    statistics={boardState.statistics}
+                    ports={boardState.ports}
+                    settlements={boardState.settlements}
+                    boardScarcity={boardState.board_scarcity}
+                    positions={boardState.positions}
+                    tiles={boardState.tiles}
+                  />
+                </CollapsibleCard>
               </div>
               <div style={{ marginTop: 16 }}>
-                <StatsPanel
-                  statistics={boardState.statistics}
-                  settlements={boardState.settlements}
-                />
+                <CollapsibleCard title="Statistics">
+                  <StatsPanel
+                    statistics={boardState.statistics}
+                    settlements={boardState.settlements}
+                  />
+                </CollapsibleCard>
               </div>
               <div style={{ marginTop: 16 }}>
-                <TradingCard
-                  ports={boardState.ports}
-                  settlements={boardState.settlements}
-                />
+                <CollapsibleCard title="Trading Rates">
+                  <TradingCard
+                    ports={boardState.ports}
+                    settlements={boardState.settlements}
+                  />
+                </CollapsibleCard>
               </div>
               <div style={{ marginTop: 16 }}>
-                <ScarcityCard
-                  boardScarcity={boardState.board_scarcity}
-                />
+                <CollapsibleCard title="Resource Availability" defaultOpen={false}>
+                  <ScarcityCard
+                    boardScarcity={boardState.board_scarcity}
+                  />
+                </CollapsibleCard>
               </div>
             </div>
           </div>
@@ -257,7 +267,7 @@ const styles = {
     zIndex: 100,
   },
   headerInner: {
-    maxWidth: 1280,
+    maxWidth: 1400,
     margin: '0 auto',
     display: 'flex',
     alignItems: 'center',
@@ -304,7 +314,7 @@ const styles = {
   },
   main: {
     padding: '24px 12px',
-    maxWidth: 1280,
+    maxWidth: 1400,
     margin: '0 auto',
   },
   error: {
@@ -317,13 +327,6 @@ const styles = {
     fontSize: 14,
     fontWeight: 500,
     textAlign: 'center',
-  },
-  hint: {
-    textAlign: 'center',
-    fontSize: 13,
-    color: '#a1887f',
-    marginTop: 10,
-    fontWeight: 500,
   },
   loadingWrap: {
     display: 'flex',

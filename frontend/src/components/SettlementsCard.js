@@ -7,7 +7,7 @@ export default function SettlementsCard({ settlements, points }) {
   const cityCount = Object.values(settlements).filter(t => t === 'city').length;
 
   return (
-    <div style={styles.container}>
+    <div>
       <div style={styles.grid}>
         <div style={styles.card}>
           <div style={styles.cardHeader}>
@@ -37,13 +37,6 @@ export default function SettlementsCard({ settlements, points }) {
 }
 
 const styles = {
-  container: {
-    padding: '16px 12px',
-    background: 'white',
-    borderRadius: 14,
-    border: '1px solid #e8e0d8',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-  },
   grid: {
     display: 'flex',
     gap: 8,
@@ -100,7 +93,7 @@ const styles = {
     padding: '10px 8px',
     borderRadius: 10,
     background: '#faf8f5',
-    border: '2px solid #6d4c41',
+    border: '1px solid #f0ebe5',
   },
   pointsLabel: {
     fontSize: 11,

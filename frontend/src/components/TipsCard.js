@@ -240,8 +240,7 @@ export default function TipsCard({ statistics, ports, settlements, boardScarcity
   if (tips.length === 0) return null;
 
   return (
-    <div style={styles.container}>
-      <h3 style={styles.title}>Tips</h3>
+    <div>
       <div style={styles.list}>
         {tips.map((tip, i) => {
           const ts = TIP_STYLES[tip.type];
@@ -258,20 +257,6 @@ export default function TipsCard({ statistics, ports, settlements, boardScarcity
 }
 
 const styles = {
-  container: {
-    padding: '16px 12px',
-    background: 'white',
-    borderRadius: 14,
-    border: '1px solid #e8e0d8',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-  },
-  title: {
-    color: '#4e342e',
-    margin: '0 0 14px 0',
-    textAlign: 'center',
-    fontSize: 18,
-    fontWeight: 700,
-  },
   list: {
     display: 'flex',
     flexDirection: 'column',
