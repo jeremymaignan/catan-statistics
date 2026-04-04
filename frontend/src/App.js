@@ -2,25 +2,46 @@ import React, { useState, useEffect } from 'react';
 import HexBoard from './components/HexBoard';
 import SetupForm from './components/SetupForm';
 import StatsPanel from './components/StatsPanel';
-import { createGame, createGameFromImage, getGame, cycleSettlement, moveRobber } from './api';
+import { createGame, createGameFromImage, getGame, cycleSettlement, moveRobber, cloneGame } from './api';
 import './responsive.css';
 
 export default function App() {
-  const [gameId, setGameId] = useState(() => localStorage.getItem('catan_game_id'));
+  const [gameId, setGameId] = useState(() => {
+    // URL query param takes priority over localStorage
+    const params = new URLSearchParams(window.location.search);
+    const urlGameId = params.get('game');
+    if (urlGameId) return urlGameId;
+    return localStorage.getItem('catan_game_id');
+  });
   const [boardState, setBoardState] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [copied, setCopied] = useState(false);
 
-  // Restore game state on load if we have a saved gameId
+  // Sync URL with current gameId
+  const updateUrl = (id) => {
+    const url = new URL(window.location);
+    if (id) {
+      url.searchParams.set('game', id);
+    } else {
+      url.searchParams.delete('game');
+    }
+    window.history.replaceState({}, '', url);
+  };
+
+  // Restore game state on load if we have a gameId
   useEffect(() => {
     if (gameId && !boardState) {
       setLoading(true);
+      updateUrl(gameId);
       getGame(gameId)
         .then(state => {
           setBoardState(state);
+          localStorage.setItem('catan_game_id', gameId);
         })
         .catch(() => {
           localStorage.removeItem('catan_game_id');
+          updateUrl(null);
           setGameId(null);
         })
         .finally(() => setLoading(false));
@@ -31,6 +52,7 @@ export default function App() {
   const saveGameId = (id) => {
     setGameId(id);
     localStorage.setItem('catan_game_id', id);
+    updateUrl(id);
   };
 
   const handleCreateGame = async (resources, values) => {
@@ -89,9 +111,36 @@ export default function App() {
 
   const handleNewGame = () => {
     localStorage.removeItem('catan_game_id');
+    updateUrl(null);
     setGameId(null);
     setBoardState(null);
     setError(null);
+  };
+
+  const handleShare = async () => {
+    if (!gameId || copied) return;
+    setError(null);
+    try {
+      const data = await cloneGame(gameId);
+      if (data.error) throw new Error(data.error);
+      const shareUrl = new URL(window.location);
+      shareUrl.searchParams.set('game', data.id);
+      const url = shareUrl.toString();
+      try {
+        await navigator.clipboard.writeText(url);
+      } catch {
+        const input = document.createElement('input');
+        input.value = url;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (
@@ -100,9 +149,14 @@ export default function App() {
         <div style={styles.headerInner}>
           <h1 style={styles.headerTitle}>Catan Statistics</h1>
           {gameId && (
-            <button onClick={handleNewGame} style={styles.newGameBtn}>
-              New Game
-            </button>
+            <div style={styles.headerActions}>
+              <button onClick={handleShare} style={styles.shareBtn}>
+                {copied ? 'Copied!' : 'Share'}
+              </button>
+              <button onClick={handleNewGame} style={styles.newGameBtn}>
+                New Game
+              </button>
+            </div>
           )}
         </div>
       </header>
@@ -183,6 +237,25 @@ const styles = {
     fontSize: 20,
     fontWeight: 700,
     letterSpacing: '0.3px',
+  },
+  headerActions: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+  },
+  shareBtn: {
+    padding: '7px 18px',
+    background: 'rgba(255,255,255,0.25)',
+    color: 'white',
+    border: '1px solid rgba(255,255,255,0.4)',
+    borderRadius: 8,
+    cursor: 'pointer',
+    fontWeight: 600,
+    fontSize: 13,
+    fontFamily: "'Inter', sans-serif",
+    transition: 'all 0.2s',
+    backdropFilter: 'blur(4px)',
+    minWidth: 72,
   },
   newGameBtn: {
     padding: '7px 18px',

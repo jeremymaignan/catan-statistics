@@ -38,6 +38,13 @@ export async function moveRobber(gameId, tileIndex) {
   return res.json();
 }
 
+export async function cloneGame(gameId) {
+  const res = await fetch(`${API_BASE}/api/games/${gameId}/clone`, {
+    method: 'POST',
+  });
+  return res.json();
+}
+
 export async function getProbabilities() {
   const res = await fetch(`${API_BASE}/api/probabilities`);
   return res.json();

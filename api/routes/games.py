@@ -185,6 +185,26 @@ def move_robber(game_id, tile_index):
     return jsonify(board_state), 200
 
 
+@games_bp.route("/api/games/<game_id>/clone", methods=["POST"])
+def clone_game(game_id):
+    """Clone a game's board (resources + values) into a new game without settlements."""
+    try:
+        game = get_db().games.find_one({"_id": ObjectId(game_id)})
+    except Exception:
+        return jsonify({"error": "Invalid game ID"}), 400
+
+    if not game:
+        return jsonify({"error": "Game not found"}), 404
+
+    clone = new_game(list(game["resources"]), list(game["values"]))
+    result = get_db().games.insert_one(clone)
+
+    return jsonify({
+        "id": str(result.inserted_id),
+        "message": "Game cloned successfully",
+    }), 201
+
+
 @games_bp.route("/api/probabilities", methods=["GET"])
 def get_probabilities():
     """Get the static dice probability table."""
