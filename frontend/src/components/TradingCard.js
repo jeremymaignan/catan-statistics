@@ -2,9 +2,9 @@ import React from 'react';
 import { RESOURCES, computeTradingRates } from '../shared/constants';
 
 const RATE_STYLES = {
-  4: { bg: '#faf8f5', border: '#f0ebe5', color: '#a1887f', label: '4:1', tagBg: '#f0ebe5', tagColor: '#8d6e63' },
-  3: { bg: '#fff8e1', border: '#ffe082', color: '#6d4c41', label: '3:1', tagBg: '#ffe082', tagColor: '#e65100' },
-  2: { bg: '#e8f5e9', border: '#a5d6a7', color: '#2e7d32', label: '2:1', tagBg: '#a5d6a7', tagColor: '#1b5e20' },
+  4: { bg: 'var(--rate-4-bg)', border: 'var(--rate-4-border)', color: 'var(--rate-4-text)', label: '4:1', tagBg: 'var(--rate-4-tag-bg)', tagColor: 'var(--rate-4-tag-text)' },
+  3: { bg: 'var(--rate-3-bg)', border: 'var(--rate-3-border)', color: 'var(--rate-3-text)', label: '3:1', tagBg: 'var(--rate-3-tag-bg)', tagColor: 'var(--rate-3-tag-text)' },
+  2: { bg: 'var(--rate-2-bg)', border: 'var(--rate-2-border)', color: 'var(--rate-2-text)', label: '2:1', tagBg: 'var(--rate-2-tag-bg)', tagColor: 'var(--rate-2-tag-text)' },
 };
 
 export default function TradingCard({ ports, settlements }) {
@@ -78,7 +78,7 @@ const styles = {
   hint: {
     textAlign: 'center',
     fontSize: 12,
-    color: '#a1887f',
+    color: 'var(--text-hint)',
     marginTop: 10,
     marginBottom: 0,
     fontWeight: 500,

@@ -21,7 +21,7 @@ export default function CollapsibleCard({ title, defaultOpen = true, children })
         <h3 style={styles.title}>{title}</h3>
         <svg
           width="16" height="16" viewBox="0 0 24 24" fill="none"
-          stroke="#8d6e63" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+          stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
           style={{ transform: open ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s', flexShrink: 0 }}
         >
           <polyline points="6 9 12 15 18 9" />
@@ -38,10 +38,10 @@ export default function CollapsibleCard({ title, defaultOpen = true, children })
 
 const styles = {
   container: {
-    background: 'white',
+    background: 'var(--card-bg)',
     borderRadius: 14,
-    border: '1px solid #e8e0d8',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+    border: '1px solid var(--border-main)',
+    boxShadow: 'var(--shadow-card)',
     overflow: 'hidden',
   },
   header: {
@@ -56,7 +56,7 @@ const styles = {
     fontFamily: "'Inter', sans-serif",
   },
   title: {
-    color: '#4e342e',
+    color: 'var(--text-primary)',
     margin: 0,
     fontSize: 18,
     fontWeight: 700,

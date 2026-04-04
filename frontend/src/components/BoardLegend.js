@@ -63,14 +63,14 @@ export default function BoardLegend() {
         style={styles.toggle}
         onClick={() => setExpanded(v => !v)}
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8d6e63" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10" />
           <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
           <line x1="12" y1="17" x2="12.01" y2="17" />
         </svg>
         <span style={styles.toggleText}>Legend</span>
         <svg
-          width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#a1887f"
+          width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-hint)"
           strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
           style={{ transform: expanded ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }}
         >
@@ -122,21 +122,21 @@ const styles = {
     cursor: 'pointer',
     padding: '4px 10px',
     borderRadius: 8,
-    color: '#8d6e63',
+    color: 'var(--text-muted)',
     fontSize: 13,
     fontWeight: 600,
     fontFamily: "'Inter', sans-serif",
   },
   toggleText: {
-    color: '#8d6e63',
+    color: 'var(--text-muted)',
   },
   container: {
     marginTop: 8,
     padding: '12px 16px',
-    background: 'white',
+    background: 'var(--card-bg)',
     borderRadius: 12,
-    border: '1px solid #e8e0d8',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+    border: '1px solid var(--border-main)',
+    boxShadow: 'var(--shadow-card)',
     maxWidth: 520,
     width: '100%',
   },
@@ -152,8 +152,8 @@ const styles = {
     gap: 8,
     padding: '6px 10px',
     borderRadius: 8,
-    background: '#faf8f5',
-    border: '1px solid #f0ebe5',
+    background: 'var(--card-inner-bg)',
+    border: '1px solid var(--border-subtle)',
     minWidth: 150,
     flex: '0 0 auto',
   },
@@ -166,12 +166,12 @@ const styles = {
   label: {
     fontSize: 12,
     fontWeight: 700,
-    color: '#4e342e',
+    color: 'var(--text-primary)',
     fontFamily: "'Inter', sans-serif",
   },
   desc: {
     fontSize: 11,
-    color: '#a1887f',
+    color: 'var(--text-hint)',
     fontWeight: 500,
     fontFamily: "'Inter', sans-serif",
   },
@@ -182,9 +182,9 @@ const styles = {
     gap: 6,
     marginTop: 10,
     paddingTop: 8,
-    borderTop: '1px solid #f0ebe5',
+    borderTop: '1px solid var(--border-subtle)',
     fontSize: 11,
-    color: '#8d6e63',
+    color: 'var(--text-muted)',
     fontWeight: 500,
     fontFamily: "'Inter', sans-serif",
     flexWrap: 'wrap',
@@ -199,10 +199,10 @@ const styles = {
   }),
   rankLabel: {
     fontWeight: 600,
-    color: '#5d4037',
+    color: 'var(--text-body)',
     marginRight: 4,
   },
   rankSuffix: {
-    color: '#a1887f',
+    color: 'var(--text-hint)',
   },
 };

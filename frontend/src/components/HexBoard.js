@@ -108,7 +108,7 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
               fontSize="14"
               fontWeight="600"
               fontFamily="'Inter', sans-serif"
-              fill={hasRobber ? 'rgba(255,255,255,0.7)' : isDark ? 'rgba(255,255,255,0.9)' : '#4e342e'}
+              fill={hasRobber ? 'rgba(255,255,255,0.7)' : isDark ? 'rgba(255,255,255,0.9)' : '#3e2723'}
             >
               {hex.tile.text}
             </text>
@@ -314,8 +314,8 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
               width={tooltipW}
               height={tooltipH}
               rx="8"
-              fill="white"
-              stroke="#d7ccc8"
+              fill="var(--svg-tooltip-bg)"
+              stroke="var(--svg-tooltip-border)"
               strokeWidth="1"
             />
             {/* Header */}
@@ -326,11 +326,11 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
               fontSize="12"
               fontWeight="700"
               fontFamily="'Inter', sans-serif"
-              fill="#4e342e"
+              fill="var(--text-primary)"
             >
               {`Rank #${info.rank}  \u00B7  Score ${info.score}`}
             </text>
-            <line x1={tp.x + 8} y1={tp.y + headerH} x2={tp.x + tooltipW - 8} y2={tp.y + headerH} stroke="#ede7e0" strokeWidth="1" />
+            <line x1={tp.x + 8} y1={tp.y + headerH} x2={tp.x + tooltipW - 8} y2={tp.y + headerH} stroke="var(--border-divider)" strokeWidth="1" />
 
             {/* Resource rows */}
             {nonDesert.map((tile, i) => {
@@ -347,7 +347,7 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
                     fontSize="11"
                     fontWeight="600"
                     fontFamily="'Inter', sans-serif"
-                    fill={tile.has_robber ? '#bbb' : '#4e342e'}
+                    fill={tile.has_robber ? 'var(--text-disabled)' : 'var(--text-primary)'}
                     textDecoration={tile.has_robber ? 'line-through' : 'none'}
                   >
                     {tile.text}
@@ -361,7 +361,7 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
                     fontSize="11"
                     fontWeight="700"
                     fontFamily="'Inter', sans-serif"
-                    fill={tile.has_robber ? '#bbb' : (tile.value === 6 || tile.value === 8) ? '#c62828' : '#5d4037'}
+                    fill={tile.has_robber ? 'var(--text-disabled)' : (tile.value === 6 || tile.value === 8) ? '#c62828' : 'var(--text-body)'}
                   >
                     {tile.value}
                   </text>
@@ -375,7 +375,7 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
               y1={tp.y + headerH + nonDesert.length * rowHeight + 4}
               x2={tp.x + tooltipW - 8}
               y2={tp.y + headerH + nonDesert.length * rowHeight + 4}
-              stroke="#ede7e0"
+              stroke="var(--border-divider)"
               strokeWidth="1"
             />
             <text
@@ -385,7 +385,7 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
               fontSize="11"
               fontWeight="700"
               fontFamily="'Inter', sans-serif"
-              fill="#6d4c41"
+              fill="var(--text-secondary)"
             >
               Total: {info.score}/36
             </text>

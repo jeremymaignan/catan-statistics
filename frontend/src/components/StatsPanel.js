@@ -50,11 +50,11 @@ export default function StatsPanel({ statistics, settlements }) {
                     const isHot = d.roll === 6 || d.roll === 8;
                     const isSeven = d.roll === 7;
                     return (
-                      <tr key={d.roll} style={isSeven ? { backgroundColor: '#fff8e1' } : {}}>
+                      <tr key={d.roll} style={isSeven ? { backgroundColor: 'var(--tip-warning-bg)' } : {}}>
                         <td style={styles.td}>
                           <span style={{
                             fontWeight: isHot || isSeven ? 800 : 600,
-                            color: isHot ? '#c62828' : isSeven ? '#e65100' : '#4e342e',
+                            color: isHot ? '#c62828' : isSeven ? '#e65100' : 'var(--text-primary)',
                             fontSize: 14,
                           }}>{d.roll}</span>
                         </td>
@@ -106,7 +106,7 @@ export default function StatsPanel({ statistics, settlements }) {
                       <td style={styles.td}>
                         <span style={{
                           ...styles.diceValue,
-                          color: (value === '6' || value === '8') ? '#c62828' : '#4e342e',
+                          color: (value === '6' || value === '8') ? '#c62828' : 'var(--text-primary)',
                           fontWeight: (value === '6' || value === '8') ? 800 : 600,
                         }}>{value}</span>
                       </td>
@@ -114,9 +114,9 @@ export default function StatsPanel({ statistics, settlements }) {
                         {resources.map((r, i) => (
                           <span key={i} style={{
                             ...styles.resourceTag,
-                            backgroundColor: r.blocked ? '#f5f5f5' : r.color + '18',
-                            color: r.blocked ? '#bbb' : r.color,
-                            borderColor: r.blocked ? '#ddd' : r.color + '44',
+                            backgroundColor: r.blocked ? 'var(--card-inner-bg)' : r.color + '18',
+                            color: r.blocked ? 'var(--text-disabled)' : r.color,
+                            borderColor: r.blocked ? 'var(--border-main)' : r.color + '44',
                             textDecoration: r.blocked ? 'line-through' : 'none',
                           }}>
                             {r.text}
@@ -145,13 +145,13 @@ export default function StatsPanel({ statistics, settlements }) {
                 <tbody>
                   {Object.entries(per_resource).map(([code, info]) => {
                     const isBlocked = info.blocked;
-                    const blockedStyle = isBlocked ? { textDecoration: 'line-through', color: '#bbb' } : {};
+                    const blockedStyle = isBlocked ? { textDecoration: 'line-through', color: 'var(--text-disabled)' } : {};
                     return (
                       <tr key={code} style={isBlocked ? { opacity: 0.55 } : {}}>
                         <td style={styles.td}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <span style={{ ...styles.resColorDot, backgroundColor: isBlocked ? '#ccc' : info.color }} />
-                            <span style={{ fontWeight: 600, color: '#4e342e', ...blockedStyle }}>{RESOURCE_EMOJIS[code] || ''} {info.text}</span>
+                            <span style={{ ...styles.resColorDot, backgroundColor: isBlocked ? 'var(--text-disabled)' : info.color }} />
+                            <span style={{ fontWeight: 600, color: 'var(--text-primary)', ...blockedStyle }}>{RESOURCE_EMOJIS[code] || ''} {info.text}</span>
                           </div>
                         </td>
                         <td style={{ ...styles.td, fontVariantNumeric: 'tabular-nums', ...blockedStyle }}>{info.proba.toFixed(3)}</td>
@@ -159,7 +159,7 @@ export default function StatsPanel({ statistics, settlements }) {
                         <td style={styles.td}>
                           <div style={styles.percentCell}>
                             <div style={styles.percentBar}>
-                              <div style={{ ...styles.percentFill, width: `${info.percentage}%`, backgroundColor: isBlocked ? '#ccc' : info.color }} />
+                              <div style={{ ...styles.percentFill, width: `${info.percentage}%`, backgroundColor: isBlocked ? 'var(--text-disabled)' : info.color }} />
                             </div>
                             <span style={{ ...styles.percentText, ...blockedStyle }}>{info.percentage}%</span>
                           </div>
@@ -168,7 +168,7 @@ export default function StatsPanel({ statistics, settlements }) {
                     );
                   })}
                   <tr style={styles.totalRow}>
-                    <td style={styles.td}><strong style={{ color: '#4e342e' }}>Any</strong></td>
+                    <td style={styles.td}><strong style={{ color: 'var(--text-primary)' }}>Any</strong></td>
                     <td style={{ ...styles.td, fontWeight: 700 }}>{any_resource.proba.toFixed(3)}</td>
                     <td style={{ ...styles.td, fontWeight: 700 }}>{any_resource.rate}/36</td>
                     <td style={{ ...styles.td, fontWeight: 700 }}>{any_resource.percentage}%</td>
@@ -187,13 +187,13 @@ export default function StatsPanel({ statistics, settlements }) {
           onClick={() => setShowDiceModal(true)}
           title="Dice probabilities"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8d6e63" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="2" y="2" width="20" height="20" rx="3" />
-            <circle cx="8" cy="8" r="1.5" fill="#8d6e63" stroke="none" />
-            <circle cx="16" cy="8" r="1.5" fill="#8d6e63" stroke="none" />
-            <circle cx="8" cy="16" r="1.5" fill="#8d6e63" stroke="none" />
-            <circle cx="16" cy="16" r="1.5" fill="#8d6e63" stroke="none" />
-            <circle cx="12" cy="12" r="1.5" fill="#8d6e63" stroke="none" />
+            <circle cx="8" cy="8" r="1.5" fill="var(--text-muted)" stroke="none" />
+            <circle cx="16" cy="8" r="1.5" fill="var(--text-muted)" stroke="none" />
+            <circle cx="8" cy="16" r="1.5" fill="var(--text-muted)" stroke="none" />
+            <circle cx="16" cy="16" r="1.5" fill="var(--text-muted)" stroke="none" />
+            <circle cx="12" cy="12" r="1.5" fill="var(--text-muted)" stroke="none" />
           </svg>
           <span style={styles.diceBtnText}>Dice probabilities</span>
         </button>
@@ -212,9 +212,9 @@ const styles = {
     display: 'inline-flex',
     alignItems: 'center',
     gap: 6,
-    border: '1px solid #e8e0d8',
+    border: '1px solid var(--border-main)',
     borderRadius: 8,
-    background: '#faf8f5',
+    background: 'var(--card-inner-bg)',
     cursor: 'pointer',
     transition: 'all 0.2s',
     padding: '4px 10px',
@@ -223,7 +223,7 @@ const styles = {
   diceBtnText: {
     fontSize: 11,
     fontWeight: 600,
-    color: '#8d6e63',
+    color: 'var(--text-muted)',
   },
   modalOverlay: {
     position: 'fixed',
@@ -231,7 +231,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.15)',
+    backgroundColor: 'var(--modal-overlay)',
     backdropFilter: 'blur(8px)',
     WebkitBackdropFilter: 'blur(8px)',
     display: 'flex',
@@ -240,10 +240,10 @@ const styles = {
     zIndex: 1000,
   },
   modal: {
-    background: 'white',
+    background: 'var(--card-bg)',
     borderRadius: 14,
     padding: '20px 24px 24px',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+    boxShadow: 'var(--shadow-modal)',
     width: '90%',
     maxWidth: 400,
   },
@@ -257,13 +257,13 @@ const styles = {
     margin: 0,
     fontSize: 16,
     fontWeight: 700,
-    color: '#4e342e',
+    color: 'var(--text-primary)',
   },
   modalClose: {
     background: 'none',
     border: 'none',
     fontSize: 16,
-    color: '#a1887f',
+    color: 'var(--text-hint)',
     cursor: 'pointer',
     padding: '2px 6px',
     borderRadius: 6,
@@ -271,7 +271,7 @@ const styles = {
   },
   dotsBar: {
     height: 6,
-    backgroundColor: '#f0ebe5',
+    backgroundColor: 'var(--bar-bg)',
     borderRadius: 3,
     overflow: 'hidden',
   },
@@ -290,7 +290,7 @@ const styles = {
     filter: 'grayscale(0.3)',
   },
   emptyText: {
-    color: '#a1887f',
+    color: 'var(--text-hint)',
     fontSize: 14,
     lineHeight: 1.5,
   },
@@ -299,7 +299,7 @@ const styles = {
   },
   tableWrap: {
     borderRadius: 8,
-    border: '1px solid #f0ebe5',
+    border: '1px solid var(--border-subtle)',
     overflow: 'auto',
     WebkitOverflowScrolling: 'touch',
   },
@@ -311,19 +311,19 @@ const styles = {
     textAlign: 'left',
     padding: '8px 10px',
     fontSize: 11,
-    color: '#a1887f',
+    color: 'var(--table-header-text)',
     fontWeight: 600,
     textTransform: 'uppercase',
     letterSpacing: '0.3px',
-    backgroundColor: '#faf8f5',
-    borderBottom: '1px solid #f0ebe5',
+    backgroundColor: 'var(--table-header-bg)',
+    borderBottom: '1px solid var(--border-subtle)',
   },
   td: {
     padding: '7px 10px',
     fontSize: 13,
-    borderBottom: '1px solid #f8f5f0',
+    borderBottom: '1px solid var(--border-table-row)',
     verticalAlign: 'middle',
-    color: '#5d4037',
+    color: 'var(--text-body)',
   },
   diceValue: {
     fontSize: 14,
@@ -339,7 +339,7 @@ const styles = {
     border: '1px solid',
   },
   totalRow: {
-    backgroundColor: '#faf8f5',
+    backgroundColor: 'var(--table-header-bg)',
   },
   resColorDot: {
     width: 8,
@@ -355,7 +355,7 @@ const styles = {
   percentBar: {
     flex: 1,
     height: 6,
-    backgroundColor: '#f0ebe5',
+    backgroundColor: 'var(--bar-bg)',
     borderRadius: 3,
     overflow: 'hidden',
   },
@@ -370,6 +370,6 @@ const styles = {
     fontVariantNumeric: 'tabular-nums',
     minWidth: 32,
     textAlign: 'right',
-    color: '#4e342e',
+    color: 'var(--text-primary)',
   },
 };

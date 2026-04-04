@@ -126,14 +126,14 @@ export default function SetupBoardPreview({ resources, values, ports, onPortClic
               <>
                 <circle
                   cx={badgeX} cy={badgeY} r="16"
-                  fill="#f5f1eb" stroke="#d7ccc8" strokeWidth="1.5"
+                  fill="var(--page-bg)" stroke="var(--border-light)" strokeWidth="1.5"
                 />
                 <text
                   x={badgeX} y={badgeY}
                   textAnchor="middle" dominantBaseline="central"
                   fontSize="18" fontWeight="600"
                   fontFamily="'Inter', sans-serif"
-                  fill="#bbb"
+                  fill="var(--text-disabled)"
                 >
                   +
                 </text>

@@ -96,7 +96,7 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
                         ...styles.select,
                         ...(resources[idx] === 'r' ? { opacity: 0.4 } : {}),
                         fontWeight: (values[idx] === '6' || values[idx] === '8') ? 700 : 500,
-                        color: (values[idx] === '6' || values[idx] === '8') ? '#c62828' : '#4e342e',
+                        color: (values[idx] === '6' || values[idx] === '8') ? '#c62828' : 'var(--text-primary)',
                       }}
                       disabled={resources[idx] === 'r'}
                     >
@@ -139,13 +139,13 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
                     return (
                       <div key={r.code} style={{ ...styles.validationRow, backgroundColor: isOk ? 'transparent' : '#fef2f2' }}>
                         <span style={{ ...styles.colorDot, backgroundColor: r.color }} />
-                        <span style={{ flex: 1, fontWeight: 500, color: '#4e342e' }}>{r.emoji} {r.label}</span>
+                        <span style={{ flex: 1, fontWeight: 500, color: 'var(--text-primary)' }}>{r.emoji} {r.label}</span>
                         <span style={{
                           fontWeight: 700,
                           fontSize: 13,
                           color: isOk ? '#43a047' : '#c62828',
                         }}>
-                          {current}<span style={{ color: '#bcaaa4', fontWeight: 400 }}>/{expected}</span>
+                          {current}<span style={{ color: 'var(--text-hint)', fontWeight: 400 }}>/{expected}</span>
                         </span>
                       </div>
                     );
@@ -168,7 +168,7 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
                       <div key={num} style={{ ...styles.validationRow, backgroundColor: isOk ? 'transparent' : '#fef2f2' }}>
                         <span style={{
                           ...styles.numBadge,
-                          backgroundColor: isHot ? '#c62828' : '#6d4c41',
+                          backgroundColor: isHot ? '#c62828' : 'var(--text-secondary)',
                           color: 'white',
                         }}>
                           {num}
@@ -179,7 +179,7 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
                           fontSize: 13,
                           color: isOk ? '#43a047' : '#c62828',
                         }}>
-                          {current}<span style={{ color: '#bcaaa4', fontWeight: 400 }}>/{expected}</span>
+                          {current}<span style={{ color: 'var(--text-hint)', fontWeight: 400 }}>/{expected}</span>
                         </span>
                       </div>
                     );
@@ -313,7 +313,7 @@ const styles = {
     marginBottom: 20,
   },
   title: {
-    color: '#4e342e',
+    color: 'var(--text-primary)',
     fontSize: 28,
     fontWeight: 700,
     margin: 0,
@@ -335,12 +335,12 @@ const styles = {
     fontSize: 14,
     fontWeight: 700,
     fontFamily: "'Inter', sans-serif",
-    background: '#ede7e0',
-    color: '#a1887f',
+    background: 'var(--toggle-bg)',
+    color: 'var(--text-hint)',
     transition: 'all 0.2s',
   },
   stepDotActive: {
-    background: 'linear-gradient(135deg, #5d4037 0%, #795548 100%)',
+    background: 'var(--btn-gradient)',
     color: 'white',
     boxShadow: '0 2px 6px rgba(93, 64, 55, 0.3)',
   },
@@ -351,12 +351,12 @@ const styles = {
   stepLine: {
     width: 40,
     height: 2,
-    background: '#d7ccc8',
+    background: 'var(--border-light)',
   },
   stepDescription: {
     textAlign: 'center',
     fontSize: 14,
-    color: '#8d6e63',
+    color: 'var(--text-muted)',
     fontWeight: 500,
     margin: '-12px 0 20px',
     fontFamily: "'Inter', sans-serif",
@@ -366,7 +366,7 @@ const styles = {
     border: 'none',
     borderRadius: 9,
     background: 'transparent',
-    color: '#8d6e63',
+    color: 'var(--text-muted)',
     cursor: 'pointer',
     fontSize: 15,
     fontWeight: 600,
@@ -374,8 +374,8 @@ const styles = {
     transition: 'all 0.2s',
   },
   modeActive: {
-    background: 'white',
-    color: '#4e342e',
+    background: 'var(--card-bg)',
+    color: 'var(--text-primary)',
     boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
   },
   modeDisabled: {
@@ -388,23 +388,24 @@ const styles = {
     alignItems: 'center',
     gap: 6,
     padding: '10px 8px',
-    border: '1px solid #e8e0d8',
+    border: '1px solid var(--border-main)',
     borderLeft: '3px solid',
     borderRadius: 10,
-    background: 'white',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+    background: 'var(--card-bg)',
+    boxShadow: 'var(--shadow-card)',
   },
   select: {
     padding: '7px 8px',
     borderRadius: 7,
-    border: '1px solid #e0d6cc',
+    border: '1px solid var(--border-light)',
     fontSize: 14,
     width: '100%',
     textAlign: 'center',
     fontFamily: "'Inter', sans-serif",
     outline: 'none',
     cursor: 'pointer',
-    background: 'white',
+    background: 'var(--card-bg)',
+    color: 'var(--text-body)',
   },
   step2Container: {
     display: 'flex',
@@ -414,7 +415,7 @@ const styles = {
   portHint: {
     textAlign: 'center',
     fontSize: 13,
-    color: '#a1887f',
+    color: 'var(--text-hint)',
     margin: '8px 0 0',
     fontWeight: 500,
   },
@@ -426,9 +427,9 @@ const styles = {
   uploadBox: {
     textAlign: 'center',
     padding: '40px 60px',
-    border: '2px dashed #d7ccc8',
+    border: '2px dashed var(--border-light)',
     borderRadius: 16,
-    background: 'white',
+    background: 'var(--card-bg)',
   },
   uploadIcon: {
     fontSize: 40,
@@ -436,13 +437,13 @@ const styles = {
     filter: 'grayscale(0.3)',
   },
   uploadHint: {
-    color: '#5d4037',
+    color: 'var(--text-body)',
     fontSize: 15,
     fontWeight: 600,
     marginBottom: 4,
   },
   uploadSub: {
-    color: '#a1887f',
+    color: 'var(--text-hint)',
     fontSize: 13,
     marginBottom: 16,
   },
@@ -451,7 +452,7 @@ const styles = {
     fontSize: 13,
   },
   fileName: {
-    color: '#6d4c41',
+    color: 'var(--text-secondary)',
     fontSize: 13,
     fontWeight: 500,
     marginTop: 8,
@@ -466,7 +467,7 @@ const styles = {
   submitBtn: {
     display: 'block',
     padding: '14px 56px',
-    background: 'linear-gradient(135deg, #5d4037 0%, #795548 100%)',
+    background: 'var(--btn-gradient)',
     color: 'white',
     border: 'none',
     borderRadius: 12,
@@ -481,9 +482,9 @@ const styles = {
   backBtn: {
     display: 'block',
     padding: '14px 40px',
-    background: 'white',
-    color: '#6d4c41',
-    border: '1px solid #d7ccc8',
+    background: 'var(--card-bg)',
+    color: 'var(--text-secondary)',
+    border: '1px solid var(--border-light)',
     borderRadius: 12,
     fontSize: 16,
     fontWeight: 600,
@@ -503,16 +504,16 @@ const styles = {
   },
   validationBlock: {
     padding: '16px 14px',
-    background: 'white',
+    background: 'var(--card-bg)',
     borderRadius: 12,
-    border: '1px solid #e8e0d8',
+    border: '1px solid var(--border-main)',
     borderTop: '3px solid',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+    boxShadow: 'var(--shadow-card)',
   },
   validationTitle: {
     margin: '0 0 12px 0',
     fontSize: 15,
-    color: '#4e342e',
+    color: 'var(--text-primary)',
     fontWeight: 700,
     display: 'flex',
     alignItems: 'center',
@@ -562,7 +563,7 @@ const styles = {
   comingSoon: {
     fontSize: 10,
     fontWeight: 500,
-    color: '#a1887f',
+    color: 'var(--text-hint)',
     fontStyle: 'italic',
     marginLeft: 4,
   },

@@ -3,9 +3,9 @@ import { RESOURCES, RESOURCE_BY_CODE, computeTradingRates } from '../shared/cons
 
 // ── Tip severity levels ─────────────────────────────────────────────
 const TIP_STYLES = {
-  warning: { icon: '\u26A0\uFE0F', bg: '#fff8e1', border: '#ffe082', color: '#e65100' },
-  success: { icon: '\u2705',       bg: '#e8f5e9', border: '#a5d6a7', color: '#2e7d32' },
-  info:    { icon: '\u{1F4A1}',    bg: '#e3f2fd', border: '#90caf9', color: '#1565c0' },
+  warning: { icon: '\u26A0\uFE0F', bg: 'var(--tip-warning-bg)', border: 'var(--tip-warning-border)', color: 'var(--tip-warning-text)' },
+  success: { icon: '\u2705',       bg: 'var(--tip-success-bg)', border: 'var(--tip-success-border)', color: 'var(--tip-success-text)' },
+  info:    { icon: '\u{1F4A1}',    bg: 'var(--tip-info-bg)',    border: 'var(--tip-info-border)',    color: 'var(--tip-info-text)' },
 };
 
 // ── Helpers (available to all generators) ────────────────────────────

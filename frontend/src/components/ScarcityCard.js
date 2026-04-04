@@ -25,7 +25,7 @@ export default function ScarcityCard({ boardScarcity }) {
                 <td style={styles.td}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ ...styles.resColorDot, backgroundColor: info.color }} />
-                    <span style={{ fontWeight: 600, color: '#4e342e' }}>{RESOURCE_EMOJIS[code] || ''} {info.text}</span>
+                    <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{RESOURCE_EMOJIS[code] || ''} {info.text}</span>
                   </div>
                 </td>
                 <td style={{ ...styles.td, fontVariantNumeric: 'tabular-nums' }}>{info.tile_count}</td>
@@ -54,7 +54,7 @@ export default function ScarcityCard({ boardScarcity }) {
 const styles = {
   tableWrap: {
     borderRadius: 8,
-    border: '1px solid #f0ebe5',
+    border: '1px solid var(--border-subtle)',
     overflow: 'auto',
     WebkitOverflowScrolling: 'touch',
   },
@@ -66,19 +66,19 @@ const styles = {
     textAlign: 'left',
     padding: '8px 10px',
     fontSize: 11,
-    color: '#a1887f',
+    color: 'var(--table-header-text)',
     fontWeight: 600,
     textTransform: 'uppercase',
     letterSpacing: '0.3px',
-    backgroundColor: '#faf8f5',
-    borderBottom: '1px solid #f0ebe5',
+    backgroundColor: 'var(--table-header-bg)',
+    borderBottom: '1px solid var(--border-subtle)',
   },
   td: {
     padding: '7px 10px',
     fontSize: 13,
-    borderBottom: '1px solid #f8f5f0',
+    borderBottom: '1px solid var(--border-table-row)',
     verticalAlign: 'middle',
-    color: '#5d4037',
+    color: 'var(--text-body)',
   },
   resColorDot: {
     width: 8,
@@ -94,7 +94,7 @@ const styles = {
   percentBar: {
     flex: 1,
     height: 6,
-    backgroundColor: '#f0ebe5',
+    backgroundColor: 'var(--bar-bg)',
     borderRadius: 3,
     overflow: 'hidden',
   },

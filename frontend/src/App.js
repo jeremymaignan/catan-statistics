@@ -8,12 +8,21 @@ import SettlementsCard from './components/SettlementsCard';
 import TipsCard from './components/TipsCard';
 import BoardLegend from './components/BoardLegend';
 import CollapsibleCard from './components/CollapsibleCard';
+import { ThemeProvider, useTheme } from './shared/ThemeContext';
 import { createGame, createGameFromImage, getGame, cycleSettlement, moveRobber, cloneGame } from './api';
 import './responsive.css';
 
-export default function App() {
+function ThemeToggle() {
+  const { dark, toggle } = useTheme();
+  return (
+    <button onClick={toggle} style={styles.themeBtn} title={dark ? 'Switch to light mode' : 'Switch to dark mode'}>
+      {dark ? '\u2600\uFE0F' : '\u{1F319}'}
+    </button>
+  );
+}
+
+function AppContent() {
   const [gameId, setGameId] = useState(() => {
-    // URL query param takes priority over localStorage
     const params = new URLSearchParams(window.location.search);
     const urlGameId = params.get('game');
     if (urlGameId) return urlGameId;
@@ -24,7 +33,6 @@ export default function App() {
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
 
-  // Sync URL with current gameId
   const updateUrl = (id) => {
     const url = new URL(window.location);
     if (id) {
@@ -35,7 +43,6 @@ export default function App() {
     window.history.replaceState({}, '', url);
   };
 
-  // Restore game state on load if we have a gameId
   useEffect(() => {
     if (gameId && !boardState) {
       setLoading(true);
@@ -154,16 +161,19 @@ export default function App() {
       <header style={styles.header}>
         <div className="header-inner" style={styles.headerInner}>
           <h1 className="header-title" style={styles.headerTitle}>Catan Statistics</h1>
-          {gameId && (
-            <div className="header-actions" style={styles.headerActions}>
-              <button onClick={handleShare} style={styles.shareBtn}>
-                {copied ? 'Copied!' : 'Share'}
-              </button>
-              <button onClick={handleNewGame} style={styles.newGameBtn}>
-                New Game
-              </button>
-            </div>
-          )}
+          <div className="header-actions" style={styles.headerActions}>
+            {gameId && (
+              <>
+                <button onClick={handleShare} style={styles.shareBtn}>
+                  {copied ? 'Copied!' : 'Share'}
+                </button>
+                <button onClick={handleNewGame} style={styles.newGameBtn}>
+                  New Game
+                </button>
+              </>
+            )}
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
@@ -243,7 +253,7 @@ export default function App() {
         ) : (
           <div style={styles.loadingWrap}>
             <div style={styles.spinner} />
-            <p style={{ color: '#8d6e63', marginTop: 12, fontSize: 14 }}>Loading game...</p>
+            <p style={{ color: 'var(--text-muted)', marginTop: 12, fontSize: 14 }}>Loading game...</p>
           </div>
         )}
       </main>
@@ -251,17 +261,26 @@ export default function App() {
   );
 }
 
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
+  );
+}
+
 const styles = {
   app: {
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
     minHeight: '100vh',
-    background: '#f5f1eb',
+    background: 'var(--page-bg)',
+    transition: 'background 0.3s',
   },
   header: {
-    background: 'linear-gradient(135deg, #4e342e 0%, #6d4c41 100%)',
+    background: 'var(--header-gradient)',
     color: 'white',
     padding: '0 24px',
-    boxShadow: '0 2px 12px rgba(78, 52, 46, 0.3)',
+    boxShadow: 'var(--shadow-header)',
     position: 'sticky',
     top: 0,
     zIndex: 100,
@@ -312,18 +331,28 @@ const styles = {
     transition: 'all 0.2s',
     backdropFilter: 'blur(4px)',
   },
+  themeBtn: {
+    padding: '5px 8px',
+    background: 'rgba(255,255,255,0.15)',
+    border: '1px solid rgba(255,255,255,0.3)',
+    borderRadius: 8,
+    cursor: 'pointer',
+    fontSize: 16,
+    lineHeight: 1,
+    transition: 'all 0.2s',
+  },
   main: {
     padding: '24px 12px',
     maxWidth: 1400,
     margin: '0 auto',
   },
   error: {
-    background: '#fef2f2',
-    color: '#b91c1c',
+    background: 'var(--error-bg)',
+    color: 'var(--error-text)',
     padding: '12px 20px',
     marginBottom: 20,
     borderRadius: 10,
-    border: '1px solid #fecaca',
+    border: '1px solid var(--error-border)',
     fontSize: 14,
     fontWeight: 500,
     textAlign: 'center',
@@ -338,8 +367,8 @@ const styles = {
   spinner: {
     width: 32,
     height: 32,
-    border: '3px solid #d7ccc8',
-    borderTopColor: '#6d4c41',
+    border: '3px solid var(--border-light)',
+    borderTopColor: 'var(--text-secondary)',
     borderRadius: '50%',
     animation: 'spin 0.8s linear infinite',
   },
