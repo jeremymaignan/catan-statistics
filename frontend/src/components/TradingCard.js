@@ -1,49 +1,5 @@
 import React from 'react';
-
-const RESOURCES = [
-  { code: 'wo', label: 'Wood',  emoji: '\u{1F332}', color: '#1b5e20', portType: 'wo_port' },
-  { code: 'b',  label: 'Brick', emoji: '\u{1F9F1}', color: '#a0522d', portType: 'b_port' },
-  { code: 'o',  label: 'Ore',   emoji: '\u{26F0}\uFE0F',  color: '#9e9e9e', portType: 'o_port' },
-  { code: 's',  label: 'Sheep', emoji: '\u{1F411}', color: '#aed581', portType: 's_port' },
-  { code: 'w',  label: 'Wheat', emoji: '\u{1F33E}', color: '#fdd835', portType: 'w_port' },
-];
-
-function computeTradingRates(ports, settlements) {
-  // Default: 4:1 for everything
-  const rates = {};
-  RESOURCES.forEach(r => { rates[r.code] = 4; });
-
-  if (!ports || !settlements) return rates;
-
-  // Only our settlements (colony/city) grant port access, not opponents
-  const settledPositions = new Set(
-    Object.entries(settlements)
-      .filter(([, type]) => type === 'colony' || type === 'city')
-      .map(([pos]) => pos)
-  );
-
-  for (const port of ports) {
-    if (!port.positions || port.type === 'none') continue;
-    const [posA, posB] = port.positions;
-    const hasAccess = settledPositions.has(posA) || settledPositions.has(posB);
-    if (!hasAccess) continue;
-
-    if (port.type === '3:1') {
-      // 3:1 applies to all resources (only if better than current)
-      RESOURCES.forEach(r => {
-        if (rates[r.code] > 3) rates[r.code] = 3;
-      });
-    } else {
-      // Resource-specific 2:1 port
-      const res = RESOURCES.find(r => r.portType === port.type);
-      if (res && rates[res.code] > 2) {
-        rates[res.code] = 2;
-      }
-    }
-  }
-
-  return rates;
-}
+import { RESOURCES, computeTradingRates } from '../shared/constants';
 
 const RATE_STYLES = {
   4: { bg: '#faf8f5', border: '#f0ebe5', color: '#a1887f', label: '4:1', tagBg: '#f0ebe5', tagColor: '#8d6e63' },

@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
-
-const RESOURCE_EMOJIS = {
-  wo: '\u{1F332}', b: '\u{1F9F1}', o: '\u{26F0}\uFE0F',
-  s: '\u{1F411}', w: '\u{1F33E}',
-};
+import { RESOURCE_EMOJIS } from '../shared/constants';
 
 const DICE_PROBABILITIES = [
   { roll: 2,  combos: 1,  proba: '2.78%',  dots: 1 },
@@ -108,7 +104,7 @@ export default function StatsPanel({ statistics, settlements }) {
       {!hasStats ? (
         <div style={styles.emptyState}>
           <div style={styles.emptyIcon}>&#127922;</div>
-          <p style={styles.emptyText}>Click on a green position on the board to place a settlement.</p>
+          <p style={styles.emptyText}>Click on a position on the board to place a settlement.</p>
         </div>
       ) : (
         <>
@@ -311,14 +307,6 @@ const styles = {
   },
   section: {
     marginBottom: 20,
-  },
-  sectionTitle: {
-    color: '#6d4c41',
-    margin: '0 0 10px 0',
-    fontSize: 13,
-    fontWeight: 700,
-    textTransform: 'uppercase',
-    letterSpacing: '0.5px',
   },
   tableWrap: {
     borderRadius: 8,

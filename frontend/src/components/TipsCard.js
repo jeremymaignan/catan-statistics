@@ -1,20 +1,5 @@
 import React from 'react';
-
-// ── Shared constants ────────────────────────────────────────────────
-const RESOURCES = [
-  { code: 'wo', label: 'Wood',  emoji: '\u{1F332}' },
-  { code: 'b',  label: 'Brick', emoji: '\u{1F9F1}' },
-  { code: 'o',  label: 'Ore',   emoji: '\u{26F0}\uFE0F' },
-  { code: 's',  label: 'Sheep', emoji: '\u{1F411}' },
-  { code: 'w',  label: 'Wheat', emoji: '\u{1F33E}' },
-];
-
-const RESOURCE_BY_CODE = {};
-RESOURCES.forEach(r => { RESOURCE_BY_CODE[r.code] = r; });
-
-const PORT_TO_RESOURCE = {
-  'wo_port': 'wo', 'b_port': 'b', 'o_port': 'o', 's_port': 's', 'w_port': 'w',
-};
+import { RESOURCES, RESOURCE_BY_CODE, computeTradingRates } from '../shared/constants';
 
 // ── Tip severity levels ─────────────────────────────────────────────
 const TIP_STYLES = {
@@ -24,29 +9,6 @@ const TIP_STYLES = {
 };
 
 // ── Helpers (available to all generators) ────────────────────────────
-
-function computeTradingRates(ports, settlements) {
-  const rates = {};
-  RESOURCES.forEach(r => { rates[r.code] = 4; });
-  if (!ports || !settlements) return rates;
-  const settled = new Set(
-    Object.entries(settlements)
-      .filter(([, t]) => t === 'colony' || t === 'city')
-      .map(([pos]) => pos)
-  );
-  for (const port of ports) {
-    if (!port.positions || port.type === 'none') continue;
-    const hasAccess = settled.has(port.positions[0]) || settled.has(port.positions[1]);
-    if (!hasAccess) continue;
-    if (port.type === '3:1') {
-      RESOURCES.forEach(r => { if (rates[r.code] > 3) rates[r.code] = 3; });
-    } else {
-      const rc = PORT_TO_RESOURCE[port.type];
-      if (rc && rates[rc] > 2) rates[rc] = 2;
-    }
-  }
-  return rates;
-}
 
 function getActiveRates(perResource) {
   const rates = {};

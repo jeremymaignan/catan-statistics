@@ -1,9 +1,5 @@
 import React from 'react';
-
-const RESOURCE_EMOJIS = {
-  wo: '\u{1F332}', b: '\u{1F9F1}', o: '\u{26F0}\uFE0F',
-  s: '\u{1F411}', w: '\u{1F33E}',
-};
+import { RESOURCE_EMOJIS } from '../shared/constants';
 
 export default function ScarcityCard({ boardScarcity }) {
   if (!boardScarcity || Object.keys(boardScarcity).length === 0) return null;
