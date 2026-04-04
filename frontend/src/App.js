@@ -3,6 +3,7 @@ import HexBoard from './components/HexBoard';
 import SetupForm from './components/SetupForm';
 import StatsPanel from './components/StatsPanel';
 import { createGame, createGameFromImage, getGame, cycleSettlement, moveRobber } from './api';
+import './responsive.css';
 
 export default function App() {
   const [gameId, setGameId] = useState(() => localStorage.getItem('catan_game_id'));
@@ -120,8 +121,8 @@ export default function App() {
             loading={loading}
           />
         ) : boardState ? (
-          <div style={styles.gameLayout}>
-            <div style={styles.boardSection}>
+          <div className="game-layout">
+            <div className="board-section">
               <HexBoard
                 tiles={boardState.tiles}
                 positions={boardState.positions}
@@ -134,7 +135,7 @@ export default function App() {
                 Tiles: click to place/remove robber
               </p>
             </div>
-            <div style={styles.statsSection}>
+            <div className="stats-section">
               <StatsPanel
                 statistics={boardState.statistics}
                 settlements={boardState.settlements}
@@ -197,7 +198,7 @@ const styles = {
     backdropFilter: 'blur(4px)',
   },
   main: {
-    padding: '24px 20px',
+    padding: '24px 12px',
     maxWidth: 1280,
     margin: '0 auto',
   },
@@ -211,19 +212,6 @@ const styles = {
     fontSize: 14,
     fontWeight: 500,
     textAlign: 'center',
-  },
-  gameLayout: {
-    display: 'flex',
-    gap: 24,
-    flexWrap: 'wrap',
-  },
-  boardSection: {
-    flex: '1 1 600px',
-    minWidth: 0,
-  },
-  statsSection: {
-    flex: '0 0 380px',
-    minWidth: 300,
   },
   hint: {
     textAlign: 'center',

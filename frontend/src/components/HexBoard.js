@@ -126,7 +126,7 @@ export default function HexBoard({ tiles, positions, onPositionClick, onTileClic
   };
 
   return (
-    <svg width="860" height="690" viewBox="0 0 860 690" style={{ display: 'block', margin: '0 auto' }}>
+    <svg viewBox="0 0 860 690" className="hex-board-svg">
       <defs>
         <filter id="hexShadow" x="-10%" y="-10%" width="120%" height="120%">
           <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#4e342e" floodOpacity="0.15" />
@@ -163,7 +163,9 @@ export default function HexBoard({ tiles, positions, onPositionClick, onTileClic
               <polygon
                 points={hexPoints(hex.x, hex.y)}
                 fill="rgba(0,0,0,0.35)"
-                stroke="none"
+                stroke="#1a1a1a"
+                strokeWidth="2.5"
+                strokeLinejoin="round"
               />
             )}
             <text
@@ -179,7 +181,7 @@ export default function HexBoard({ tiles, positions, onPositionClick, onTileClic
             </text>
             {hex.tile.value > 0 && (
               <>
-                <circle cx={hex.x} cy={hex.y + 14} r="22" fill={hasRobber ? '#e0e0e0' : '#faf8f5'} stroke={hasRobber ? '#1a1a1a' : isHot ? '#c62828' : '#a1887f'} strokeWidth={hasRobber ? 2 : isHot ? 2 : 1.5} />
+                <circle cx={hex.x} cy={hex.y + 14} r="22" fill={hasRobber ? '#e0e0e0' : '#faf8f5'} stroke={hasRobber ? '#1a1a1a' : isHot ? '#c62828' : '#5d4037'} strokeWidth={hasRobber ? 2 : isHot ? 2 : 1.5} />
                 <text
                   x={hex.x}
                   y={hex.y + 14}
@@ -188,7 +190,7 @@ export default function HexBoard({ tiles, positions, onPositionClick, onTileClic
                   fontSize="20"
                   fontWeight={isHot ? '800' : '600'}
                   fontFamily="'Inter', sans-serif"
-                  fill={hasRobber ? '#1a1a1a' : isHot ? '#c62828' : '#4e342e'}
+                  fill={hasRobber ? '#1a1a1a' : isHot ? '#c62828' : '#3e2723'}
                 >
                   {hex.tile.value}
                 </text>
@@ -227,7 +229,7 @@ export default function HexBoard({ tiles, positions, onPositionClick, onTileClic
           >
             {status === 'colony' ? (
               <>
-                <circle cx={pixel.x} cy={pixel.y} r="13" fill="#ef6c00" stroke="#e65100" strokeWidth="2" />
+                <rect x={pixel.x - 13} y={pixel.y - 13} width="26" height="26" rx="5" fill="#f9a825" stroke="#f57f17" strokeWidth="2" />
                 <text x={pixel.x} y={pixel.y + 1} textAnchor="middle" dominantBaseline="middle" fontSize="13" fill="white" fontWeight="bold">
                   {'\u25B2'}
                 </text>

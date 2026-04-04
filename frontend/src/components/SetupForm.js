@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../responsive.css';
 
 const RESOURCE_OPTIONS = [
   { code: 'wo', label: 'Wood', color: '#1b5e20' },
@@ -6,7 +7,7 @@ const RESOURCE_OPTIONS = [
   { code: 'o', label: 'Ore', color: '#9e9e9e' },
   { code: 's', label: 'Sheep', color: '#aed581' },
   { code: 'w', label: 'Wheat', color: '#fdd835' },
-  { code: 'r', label: 'Desert', color: '#efebe9' },
+  { code: 'r', label: 'Desert', color: '#a1887f' },
 ];
 
 const VALUE_OPTIONS = [0, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12];
@@ -57,10 +58,9 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
     <div style={styles.container}>
       <div style={styles.titleWrap}>
         <h2 style={styles.title}>New Game Setup</h2>
-        <p style={styles.subtitle}>Configure your Catan board</p>
       </div>
 
-      <div style={styles.modeToggle}>
+      <div className="mode-toggle">
         <button
           style={{ ...styles.modeBtn, ...(mode === 'manual' ? styles.modeActive : {}) }}
           onClick={() => setMode('manual')}
@@ -73,23 +73,23 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
           onClick={() => setMode('image')}
           type="button"
         >
-          From Screenshot
+          From Picture <span style={styles.comingSoon}>coming soon</span>
         </button>
       </div>
 
       <form onSubmit={handleSubmit}>
         {mode === 'manual' ? (
-          <div style={styles.setupLayout}>
-            <div style={styles.boardSetup}>
+          <div className="setup-layout">
+            <div className="board-setup">
               {(() => {
                 let tileIdx = 0;
                 return rowStructure.map((count, rowIdx) => (
-                  <div key={rowIdx} style={styles.tileRow}>
+                  <div key={rowIdx} className="tile-row">
                     {Array.from({ length: count }).map((_, colIdx) => {
                       const idx = tileIdx++;
                       const resColor = RESOURCE_OPTIONS.find(r => r.code === resources[idx])?.color || '#999';
                       return (
-                        <div key={idx} style={{ ...styles.tileCard, borderLeftColor: resColor }}>
+                        <div key={idx} className="tile-card" style={{ ...styles.tileCard, borderLeftColor: resColor }}>
                           <select
                             value={resources[idx]}
                             onChange={(e) => handleResourceChange(idx, e.target.value)}
@@ -137,8 +137,8 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
               const numValid = Object.entries(EXPECTED_NUMBERS).every(([k, v]) => (numCounts[k] || 0) === v);
 
               return (
-                <div style={styles.validationSidebar}>
-                  <div style={styles.validationRow2Col}>
+                <div className="validation-sidebar">
+                  <div className="validation-row-2col" style={styles.validationRow2Col}>
                     <div style={{ ...styles.validationBlock, borderTopColor: resValid ? '#43a047' : '#ef5350', flex: 1 }}>
                       <h4 style={styles.validationTitle}>
                         Resources
@@ -208,7 +208,7 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
           </div>
         ) : (
           <div style={styles.uploadSection}>
-            <div style={styles.uploadBox}>
+            <div className="upload-box" style={styles.uploadBox}>
               <div style={styles.uploadIcon}>&#128247;</div>
               <p style={styles.uploadHint}>Upload a screenshot of your Catan board</p>
               <p style={styles.uploadSub}>The app will use OpenAI Vision to parse it</p>
@@ -250,23 +250,6 @@ const styles = {
     fontWeight: 700,
     margin: 0,
   },
-  subtitle: {
-    color: '#a1887f',
-    fontSize: 15,
-    marginTop: 6,
-    fontWeight: 400,
-  },
-  modeToggle: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: 4,
-    marginBottom: 28,
-    backgroundColor: '#ede7e0',
-    borderRadius: 12,
-    padding: 5,
-    width: 'fit-content',
-    margin: '0 auto 28px',
-  },
   modeBtn: {
     padding: '11px 28px',
     border: 'none',
@@ -284,23 +267,6 @@ const styles = {
     color: '#4e342e',
     boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
   },
-  setupLayout: {
-    display: 'flex',
-    gap: 24,
-    alignItems: 'flex-start',
-  },
-  boardSetup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 8,
-    flex: 1,
-    minWidth: 0,
-  },
-  tileRow: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: 8,
-  },
   tileCard: {
     display: 'flex',
     flexDirection: 'column',
@@ -311,7 +277,6 @@ const styles = {
     borderLeft: '3px solid',
     borderRadius: 10,
     background: 'white',
-    minWidth: 105,
     boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
   },
   select: {
@@ -378,14 +343,13 @@ const styles = {
     cursor: 'pointer',
     boxShadow: '0 2px 8px rgba(93, 64, 55, 0.3)',
     transition: 'all 0.2s',
+    width: '100%',
+    maxWidth: 300,
   },
   btnDisabled: {
     opacity: 0.5,
     cursor: 'not-allowed',
     boxShadow: 'none',
-  },
-  validationSidebar: {
-    flex: '0 0 420px',
   },
   validationRow2Col: {
     display: 'flex',
@@ -448,5 +412,12 @@ const styles = {
     fontSize: 12,
     fontWeight: 700,
     padding: '0 5px',
+  },
+  comingSoon: {
+    fontSize: 10,
+    fontWeight: 500,
+    color: '#a1887f',
+    fontStyle: 'italic',
+    marginLeft: 4,
   },
 };

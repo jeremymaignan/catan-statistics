@@ -204,7 +204,7 @@ export default function StatsPanel({ statistics, settlements, points, boardScarc
                 <div style={styles.settlementGrid}>
                   <div style={styles.settlementCard}>
                     <div style={styles.settlementHeader}>
-                      <span style={{ ...styles.settlementIcon, background: '#ef6c00' }}>{'\u25B2'}</span>
+                      <span style={{ ...styles.settlementIcon, background: '#f9a825', borderRadius: 5 }}>{'\u25B2'}</span>
                       <span style={styles.settlementLabel}>Colonies</span>
                     </div>
                     <span style={{ ...styles.settlementCount, color: colonyCount > 5 ? '#c62828' : '#4e342e' }}>
@@ -284,7 +284,7 @@ export default function StatsPanel({ statistics, settlements, points, boardScarc
 
 const styles = {
   container: {
-    padding: 20,
+    padding: '16px 12px',
     background: 'white',
     borderRadius: 14,
     border: '1px solid #e8e0d8',
@@ -334,7 +334,7 @@ const styles = {
     borderRadius: 14,
     padding: '20px 24px 24px',
     boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
-    minWidth: 340,
+    width: '90%',
     maxWidth: 400,
   },
   modalHeader: {
@@ -398,7 +398,8 @@ const styles = {
   tableWrap: {
     borderRadius: 8,
     border: '1px solid #f0ebe5',
-    overflow: 'hidden',
+    overflow: 'auto',
+    WebkitOverflowScrolling: 'touch',
   },
   table: {
     width: '100%',
