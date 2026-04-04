@@ -5,6 +5,7 @@ import StatsPanel from './components/StatsPanel';
 import TradingCard from './components/TradingCard';
 import ScarcityCard from './components/ScarcityCard';
 import SettlementsCard from './components/SettlementsCard';
+import TipsCard from './components/TipsCard';
 import { createGame, createGameFromImage, getGame, cycleSettlement, moveRobber, cloneGame } from './api';
 import './responsive.css';
 
@@ -149,10 +150,10 @@ export default function App() {
   return (
     <div style={styles.app}>
       <header style={styles.header}>
-        <div style={styles.headerInner}>
-          <h1 style={styles.headerTitle}>Catan Statistics</h1>
+        <div className="header-inner" style={styles.headerInner}>
+          <h1 className="header-title" style={styles.headerTitle}>Catan Statistics</h1>
           {gameId && (
-            <div style={styles.headerActions}>
+            <div className="header-actions" style={styles.headerActions}>
               <button onClick={handleShare} style={styles.shareBtn}>
                 {copied ? 'Copied!' : 'Share'}
               </button>
@@ -187,17 +188,29 @@ export default function App() {
                 onPositionClick={handlePositionClick}
                 onTileClick={handleTileClick}
               />
-              <p style={styles.hint}>
-                Vertices: <span style={{ color: '#43a047', fontWeight: 600 }}>empty</span> &rarr; <span style={{ color: '#7b1fa2', fontWeight: 600 }}>colony</span> &rarr; <span style={{ color: '#1565c0', fontWeight: 600 }}>city</span> &rarr; removed
-                <span style={{ margin: '0 10px', color: '#d7ccc8' }}>|</span>
-                Tiles: click to place/remove robber
-              </p>
+              <div className="board-hint" style={styles.hint}>
+                <span>
+                  Vertices: <span style={{ color: '#43a047', fontWeight: 600 }}>empty</span> &rarr; <span style={{ color: '#7b1fa2', fontWeight: 600 }}>colony</span> &rarr; <span style={{ color: '#1565c0', fontWeight: 600 }}>city</span> &rarr; <span style={{ color: '#212121', fontWeight: 600 }}>opponent</span> &rarr; removed
+                </span>
+                <span className="board-hint-separator" style={{ margin: '0 10px', color: '#d7ccc8' }}>|</span>
+                <span>Tiles: click to place/remove robber</span>
+              </div>
             </div>
             <div className="stats-section">
               <SettlementsCard
                 settlements={boardState.settlements}
                 points={boardState.points}
               />
+              <div style={{ marginTop: 16 }}>
+                <TipsCard
+                  statistics={boardState.statistics}
+                  ports={boardState.ports}
+                  settlements={boardState.settlements}
+                  boardScarcity={boardState.board_scarcity}
+                  positions={boardState.positions}
+                  tiles={boardState.tiles}
+                />
+              </div>
               <div style={{ marginTop: 16 }}>
                 <StatsPanel
                   statistics={boardState.statistics}

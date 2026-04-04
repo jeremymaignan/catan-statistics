@@ -77,8 +77,9 @@ def remove_settlement(position, settlements, blocked_positions):
 def calculate_statistics(resources, values, settlements, robber_tile=None):
     """
     Calculate probability statistics for the current settlements.
-    settlements is a dict {position: "colony"|"city"}.
+    settlements is a dict {position: "colony"|"city"|"opponent"}.
     Cities produce 2x resources (counted twice in per_dice_value).
+    Opponent settlements are excluded (they don't produce resources for us).
     robber_tile is the 1-based tile index where the robber sits (blocks production).
     Returns a dict with per-dice-value resources and per-resource probabilities.
     Blocked resources (by robber) are included with blocked=True.
@@ -89,6 +90,8 @@ def calculate_statistics(resources, values, settlements, robber_tile=None):
     blocked_per_resource = {}
 
     for position, stype in settlements.items():
+        if stype == "opponent":
+            continue  # Opponent settlements don't produce resources for us
         multiplier = 2 if stype == "city" else 1
 
         for tile_idx in INDEXES.get(position, []):
@@ -301,8 +304,12 @@ def get_board_state(game):
 
     stats = calculate_statistics(resources, values, settlements, robber_tile)
 
-    # Count points
-    points = sum(1 if t == "colony" else 2 for t in settlements.values())
+    # Count points (exclude opponent settlements)
+    points = sum(
+        1 if t == "colony" else 2
+        for t in settlements.values()
+        if t in ("colony", "city")
+    )
 
     # Board-level resource scarcity analysis
     # For each resource, collect the unique dice values across all its tiles.

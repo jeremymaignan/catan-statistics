@@ -15,7 +15,12 @@ function computeTradingRates(ports, settlements) {
 
   if (!ports || !settlements) return rates;
 
-  const settledPositions = new Set(Object.keys(settlements));
+  // Only our settlements (colony/city) grant port access, not opponents
+  const settledPositions = new Set(
+    Object.entries(settlements)
+      .filter(([, type]) => type === 'colony' || type === 'city')
+      .map(([pos]) => pos)
+  );
 
   for (const port of ports) {
     if (!port.positions || port.type === 'none') continue;

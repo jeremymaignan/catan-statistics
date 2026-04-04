@@ -113,7 +113,7 @@ def get_game(game_id):
 def cycle_settlement(game_id, position):
     """
     Cycle a settlement position through states:
-      available -> colony -> city -> removed (available)
+      available -> colony -> city -> opponent -> removed (available)
     """
     try:
         game = get_db().games.find_one({"_id": ObjectId(game_id)})
@@ -139,7 +139,11 @@ def cycle_settlement(game_id, position):
         # Colony -> City
         settlements = upgrade_settlement(position, settlements)
     elif settlements[position] == "city":
-        # City -> Remove
+        # City -> Opponent
+        settlements = dict(settlements)
+        settlements[position] = "opponent"
+    elif settlements[position] == "opponent":
+        # Opponent -> Remove
         settlements, blocked = remove_settlement(position, settlements, blocked)
 
     get_db().games.update_one(

@@ -4,8 +4,8 @@ import '../responsive.css';
 
 const RESOURCE_OPTIONS = [
   { code: 'wo', label: 'Wood', emoji: '\u{1F332}', color: '#1b5e20' },
-  { code: 'b', label: 'Brick', emoji: '\u{1F9F1}', color: '#8d6e63' },
-  { code: 'o', label: 'Ore', emoji: '\u{26F0}\uFE0F', color: '#9e9e9e' },
+  { code: 'b', label: 'Brick', emoji: '\u{1F9F1}', color: '#a0522d' },
+  { code: 'o', label: 'Ore', emoji: '\u{26F0}\uFE0F', color: '#757575' },
   { code: 's', label: 'Sheep', emoji: '\u{1F411}', color: '#aed581' },
   { code: 'w', label: 'Wheat', emoji: '\u{1F33E}', color: '#fdd835' },
   { code: 'r', label: 'Desert', emoji: '\u{1F3DC}\uFE0F', color: '#a1887f' },

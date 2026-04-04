@@ -103,6 +103,14 @@
   }
 }
 
+/* Board hint: allow wrapping on smaller screens */
+.board-hint {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
 /* Mobile styles */
 @media (max-width: 640px) {
   .tile-row {
@@ -137,6 +145,17 @@
   .validation-row-2col {
     flex-direction: column !important;
   }
+
+  /* Stack hint text vertically on mobile */
+  .board-hint {
+    flex-direction: column;
+    gap: 2px;
+    font-size: 12px !important;
+  }
+
+  .board-hint-separator {
+    display: none;
+  }
 }
 
 /* Small mobile */
@@ -144,5 +163,19 @@
   .tile-card select {
     font-size: 11px !important;
     padding: 4px 2px !important;
+  }
+
+  .header-title {
+    font-size: 16px !important;
+  }
+
+  .header-actions button {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    min-width: auto !important;
+  }
+
+  .board-hint {
+    font-size: 11px !important;
   }
 }

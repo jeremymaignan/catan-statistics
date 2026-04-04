@@ -323,7 +323,7 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
         if (!pixel) return null;
 
         const { status } = info;
-        const isClickable = status === 'available' || status === 'colony' || status === 'city';
+        const isClickable = status === 'available' || status === 'colony' || status === 'city' || status === 'opponent';
         const isHovered = hoveredPos === pos;
         const rankColors = getRankColor(info.rank, info.total_ranks || 1);
 
@@ -332,7 +332,7 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
             key={`pos-${pos}`}
             onClick={() => isClickable ? onPositionClick(pos) : null}
             style={{ cursor: isClickable ? 'pointer' : 'default' }}
-            filter={status === 'colony' || status === 'city' ? 'url(#markerGlow)' : undefined}
+            filter={status === 'colony' || status === 'city' || status === 'opponent' ? 'url(#markerGlow)' : undefined}
             onMouseEnter={() => status === 'available' ? handleMouseEnter(pos, info, pixel) : null}
             onMouseLeave={handleMouseLeave}
           >
@@ -348,6 +348,13 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
                 <rect x={pixel.x - 13} y={pixel.y - 13} width="26" height="26" rx="5" fill="#1565c0" stroke="#0d47a1" strokeWidth="2" />
                 <text x={pixel.x} y={pixel.y + 1} textAnchor="middle" dominantBaseline="middle" fontSize="15" fill="white" fontWeight="bold">
                   {'\u2605'}
+                </text>
+              </>
+            ) : status === 'opponent' ? (
+              <>
+                <rect x={pixel.x - 13} y={pixel.y - 13} width="26" height="26" rx="5" fill="#212121" stroke="#000" strokeWidth="2" />
+                <text x={pixel.x} y={pixel.y + 1} textAnchor="middle" dominantBaseline="middle" fontSize="13" fill="white" fontWeight="bold">
+                  {'\u2716'}
                 </text>
               </>
             ) : status === 'blocked' ? (
