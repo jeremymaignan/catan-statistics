@@ -31,6 +31,13 @@ export async function cycleSettlement(gameId, position) {
   return res.json();
 }
 
+export async function moveRobber(gameId, tileIndex) {
+  const res = await fetch(`${API_BASE}/api/games/${gameId}/robber/${tileIndex}`, {
+    method: 'PATCH',
+  });
+  return res.json();
+}
+
 export async function getProbabilities() {
   const res = await fetch(`${API_BASE}/api/probabilities`);
   return res.json();

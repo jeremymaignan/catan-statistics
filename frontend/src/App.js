@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import HexBoard from './components/HexBoard';
 import SetupForm from './components/SetupForm';
 import StatsPanel from './components/StatsPanel';
-import { createGame, createGameFromImage, getGame, cycleSettlement } from './api';
+import { createGame, createGameFromImage, getGame, cycleSettlement, moveRobber } from './api';
 
 export default function App() {
   const [gameId, setGameId] = useState(() => localStorage.getItem('catan_game_id'));
@@ -74,6 +74,18 @@ export default function App() {
     }
   };
 
+  const handleTileClick = async (tileIndex) => {
+    if (!gameId) return;
+    setError(null);
+    try {
+      const data = await moveRobber(gameId, tileIndex);
+      if (data.error) throw new Error(data.error);
+      setBoardState(data);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   const handleNewGame = () => {
     localStorage.removeItem('catan_game_id');
     setGameId(null);
@@ -114,9 +126,12 @@ export default function App() {
                 tiles={boardState.tiles}
                 positions={boardState.positions}
                 onPositionClick={handlePositionClick}
+                onTileClick={handleTileClick}
               />
               <p style={styles.hint}>
-                Click: <span style={{ color: '#43a047', fontWeight: 600 }}>empty</span> &rarr; colony &rarr; city &rarr; removed
+                Vertices: <span style={{ color: '#43a047', fontWeight: 600 }}>empty</span> &rarr; colony &rarr; city &rarr; removed
+                <span style={{ margin: '0 10px', color: '#d7ccc8' }}>|</span>
+                Tiles: click to place/remove robber
               </p>
             </div>
             <div style={styles.statsSection}>
@@ -124,6 +139,7 @@ export default function App() {
                 statistics={boardState.statistics}
                 settlements={boardState.settlements}
                 points={boardState.points}
+                boardScarcity={boardState.board_scarcity}
               />
             </div>
           </div>

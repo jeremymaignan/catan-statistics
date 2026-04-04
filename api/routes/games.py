@@ -147,6 +147,44 @@ def cycle_settlement(game_id, position):
     return jsonify(board_state), 200
 
 
+@games_bp.route("/api/games/<game_id>/robber/<int:tile_index>", methods=["PATCH"])
+def move_robber(game_id, tile_index):
+    """
+    Place or remove the robber on a tile.
+    If the robber is already on this tile, remove it.
+    tile_index is 1-based (1-19).
+    """
+    try:
+        game = get_db().games.find_one({"_id": ObjectId(game_id)})
+    except Exception:
+        return jsonify({"error": "Invalid game ID"}), 400
+
+    if not game:
+        return jsonify({"error": "Game not found"}), 404
+
+    if tile_index < 1 or tile_index > 19:
+        return jsonify({"error": "Tile index must be between 1 and 19"}), 400
+
+    current_robber = game.get("robber_tile")
+
+    # Toggle: if robber is already on this tile, remove it; otherwise place it
+    if current_robber == tile_index:
+        new_robber = None
+    else:
+        new_robber = tile_index
+
+    get_db().games.update_one(
+        {"_id": ObjectId(game_id)},
+        {"$set": {"robber_tile": new_robber}},
+    )
+
+    game["robber_tile"] = new_robber
+    board_state = get_board_state(game)
+    board_state["id"] = game_id
+
+    return jsonify(board_state), 200
+
+
 @games_bp.route("/api/probabilities", methods=["GET"])
 def get_probabilities():
     """Get the static dice probability table."""

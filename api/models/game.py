@@ -11,5 +11,6 @@ def new_game(resources, values):
         "values": values,
         "settlements": {},
         "blocked_positions": [],
+        "robber_tile": None,
         "created_at": datetime.now(timezone.utc),
     }

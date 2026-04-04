@@ -1,6 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-export default function StatsPanel({ statistics, settlements, points }) {
+const DICE_PROBABILITIES = [
+  { roll: 2,  combos: 1,  proba: '2.78%',  dots: 1 },
+  { roll: 3,  combos: 2,  proba: '5.56%',  dots: 2 },
+  { roll: 4,  combos: 3,  proba: '8.33%',  dots: 3 },
+  { roll: 5,  combos: 4,  proba: '11.11%', dots: 4 },
+  { roll: 6,  combos: 5,  proba: '13.89%', dots: 5 },
+  { roll: 7,  combos: 6,  proba: '16.67%', dots: 6 },
+  { roll: 8,  combos: 5,  proba: '13.89%', dots: 5 },
+  { roll: 9,  combos: 4,  proba: '11.11%', dots: 4 },
+  { roll: 10, combos: 3,  proba: '8.33%',  dots: 3 },
+  { roll: 11, combos: 2,  proba: '5.56%',  dots: 2 },
+  { roll: 12, combos: 1,  proba: '2.78%',  dots: 1 },
+];
+
+export default function StatsPanel({ statistics, settlements, points, boardScarcity }) {
+  const [showDiceModal, setShowDiceModal] = useState(false);
+
   if (!statistics) return null;
 
   const { per_dice_value, per_resource, any_resource } = statistics;
@@ -8,7 +24,81 @@ export default function StatsPanel({ statistics, settlements, points }) {
 
   return (
     <div style={styles.container}>
-      <h3 style={styles.title}>Statistics</h3>
+      <div style={styles.titleRow}>
+        <h3 style={styles.title}>Statistics</h3>
+        <button
+          style={styles.diceBtn}
+          onClick={() => setShowDiceModal(true)}
+          title="Dice probabilities"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8d6e63" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="3" />
+            <circle cx="8" cy="8" r="1.5" fill="#8d6e63" stroke="none" />
+            <circle cx="16" cy="8" r="1.5" fill="#8d6e63" stroke="none" />
+            <circle cx="8" cy="16" r="1.5" fill="#8d6e63" stroke="none" />
+            <circle cx="16" cy="16" r="1.5" fill="#8d6e63" stroke="none" />
+            <circle cx="12" cy="12" r="1.5" fill="#8d6e63" stroke="none" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Dice probability modal */}
+      {showDiceModal && (
+        <div style={styles.modalOverlay} onClick={() => setShowDiceModal(false)}>
+          <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div style={styles.modalHeader}>
+              <h4 style={styles.modalTitle}>Dice Roll Probabilities</h4>
+              <button style={styles.modalClose} onClick={() => setShowDiceModal(false)}>
+                {'\u2715'}
+              </button>
+            </div>
+            <div style={styles.tableWrap}>
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th style={styles.th}>Roll</th>
+                    <th style={styles.th}>Combos</th>
+                    <th style={styles.th}>Prob.</th>
+                    <th style={{ ...styles.th, width: 90 }}>Visual</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {DICE_PROBABILITIES.map((d) => {
+                    const isHot = d.roll === 6 || d.roll === 8;
+                    const isSeven = d.roll === 7;
+                    return (
+                      <tr key={d.roll} style={isSeven ? { backgroundColor: '#fff8e1' } : {}}>
+                        <td style={styles.td}>
+                          <span style={{
+                            fontWeight: isHot || isSeven ? 800 : 600,
+                            color: isHot ? '#c62828' : isSeven ? '#e65100' : '#4e342e',
+                            fontSize: 14,
+                          }}>{d.roll}</span>
+                        </td>
+                        <td style={{ ...styles.td, fontVariantNumeric: 'tabular-nums' }}>
+                          {d.combos}/36
+                        </td>
+                        <td style={{ ...styles.td, fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
+                          {d.proba}
+                        </td>
+                        <td style={styles.td}>
+                          <div style={styles.dotsBar}>
+                            <div style={{
+                              ...styles.dotsFill,
+                              width: `${(d.dots / 6) * 100}%`,
+                              backgroundColor: isHot ? '#c62828' : isSeven ? '#e65100' : '#8d6e63',
+                            }} />
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
 
       {!hasStats ? (
         <div style={styles.emptyState}>
@@ -39,7 +129,13 @@ export default function StatsPanel({ statistics, settlements, points }) {
                       </td>
                       <td style={styles.td}>
                         {resources.map((r, i) => (
-                          <span key={i} style={{ ...styles.resourceTag, backgroundColor: r.color + '18', color: r.color, borderColor: r.color + '44' }}>
+                          <span key={i} style={{
+                            ...styles.resourceTag,
+                            backgroundColor: r.blocked ? '#f5f5f5' : r.color + '18',
+                            color: r.blocked ? '#bbb' : r.color,
+                            borderColor: r.blocked ? '#ddd' : r.color + '44',
+                            textDecoration: r.blocked ? 'line-through' : 'none',
+                          }}>
                             {r.text}
                           </span>
                         ))}
@@ -64,26 +160,30 @@ export default function StatsPanel({ statistics, settlements, points }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.entries(per_resource).map(([code, info]) => (
-                    <tr key={code}>
-                      <td style={styles.td}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <span style={{ ...styles.resColorDot, backgroundColor: info.color }} />
-                          <span style={{ fontWeight: 600, color: '#4e342e' }}>{info.text}</span>
-                        </div>
-                      </td>
-                      <td style={{ ...styles.td, fontVariantNumeric: 'tabular-nums' }}>{info.proba.toFixed(3)}</td>
-                      <td style={{ ...styles.td, fontVariantNumeric: 'tabular-nums' }}>{info.rate}/36</td>
-                      <td style={styles.td}>
-                        <div style={styles.percentCell}>
-                          <div style={styles.percentBar}>
-                            <div style={{ ...styles.percentFill, width: `${info.percentage}%`, backgroundColor: info.color }} />
+                  {Object.entries(per_resource).map(([code, info]) => {
+                    const isBlocked = info.blocked;
+                    const blockedStyle = isBlocked ? { textDecoration: 'line-through', color: '#bbb' } : {};
+                    return (
+                      <tr key={code} style={isBlocked ? { opacity: 0.55 } : {}}>
+                        <td style={styles.td}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <span style={{ ...styles.resColorDot, backgroundColor: isBlocked ? '#ccc' : info.color }} />
+                            <span style={{ fontWeight: 600, color: '#4e342e', ...blockedStyle }}>{info.text}</span>
                           </div>
-                          <span style={styles.percentText}>{info.percentage}%</span>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td style={{ ...styles.td, fontVariantNumeric: 'tabular-nums', ...blockedStyle }}>{info.proba.toFixed(3)}</td>
+                        <td style={{ ...styles.td, fontVariantNumeric: 'tabular-nums', ...blockedStyle }}>{info.rate}/36</td>
+                        <td style={styles.td}>
+                          <div style={styles.percentCell}>
+                            <div style={styles.percentBar}>
+                              <div style={{ ...styles.percentFill, width: `${info.percentage}%`, backgroundColor: isBlocked ? '#ccc' : info.color }} />
+                            </div>
+                            <span style={{ ...styles.percentText, ...blockedStyle }}>{info.percentage}%</span>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                   <tr style={styles.totalRow}>
                     <td style={styles.td}><strong style={{ color: '#4e342e' }}>Any</strong></td>
                     <td style={{ ...styles.td, fontWeight: 700 }}>{any_resource.proba.toFixed(3)}</td>
@@ -130,6 +230,54 @@ export default function StatsPanel({ statistics, settlements, points }) {
           </div>
         </>
       )}
+
+      {/* Board scarcity - always visible, at bottom */}
+      {boardScarcity && Object.keys(boardScarcity).length > 0 && (() => {
+        const entries = Object.entries(boardScarcity).sort((a, b) => b[1].total_rate - a[1].total_rate);
+        const maxRate = Math.max(...entries.map(([, v]) => v.total_rate));
+        return (
+          <div style={{ marginTop: hasStats ? 0 : 20 }}>
+            <div style={styles.tableWrap}>
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th style={styles.th}>Resource</th>
+                    <th style={styles.th}>Tiles</th>
+                    <th style={styles.th}>Rate</th>
+                    <th style={{ ...styles.th, width: 100 }}>Availability</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {entries.map(([code, info]) => (
+                    <tr key={code}>
+                      <td style={styles.td}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <span style={{ ...styles.resColorDot, backgroundColor: info.color }} />
+                          <span style={{ fontWeight: 600, color: '#4e342e' }}>{info.text}</span>
+                        </div>
+                      </td>
+                      <td style={{ ...styles.td, fontVariantNumeric: 'tabular-nums' }}>{info.tile_count}</td>
+                      <td style={{ ...styles.td, fontVariantNumeric: 'tabular-nums' }}>{info.total_rate}/36</td>
+                      <td style={styles.td}>
+                        <div style={styles.percentCell}>
+                          <div style={styles.percentBar}>
+                            <div style={{
+                              ...styles.percentFill,
+                              width: `${(info.total_rate / maxRate) * 100}%`,
+                              backgroundColor: info.board_color,
+                              opacity: 0.7,
+                            }} />
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
@@ -142,12 +290,85 @@ const styles = {
     border: '1px solid #e8e0d8',
     boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
   },
+  titleRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
   title: {
     color: '#4e342e',
-    margin: '0 0 16px 0',
+    margin: 0,
     textAlign: 'center',
     fontSize: 18,
     fontWeight: 700,
+  },
+  diceBtn: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 30,
+    height: 30,
+    border: '1px solid #e8e0d8',
+    borderRadius: 8,
+    background: '#faf8f5',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    padding: 0,
+  },
+  modalOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000,
+  },
+  modal: {
+    background: 'white',
+    borderRadius: 14,
+    padding: '20px 24px 24px',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+    minWidth: 340,
+    maxWidth: 400,
+  },
+  modalHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+  },
+  modalTitle: {
+    margin: 0,
+    fontSize: 16,
+    fontWeight: 700,
+    color: '#4e342e',
+  },
+  modalClose: {
+    background: 'none',
+    border: 'none',
+    fontSize: 16,
+    color: '#a1887f',
+    cursor: 'pointer',
+    padding: '2px 6px',
+    borderRadius: 6,
+    fontFamily: "'Inter', sans-serif",
+  },
+  dotsBar: {
+    height: 6,
+    backgroundColor: '#f0ebe5',
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  dotsFill: {
+    height: '100%',
+    borderRadius: 3,
+    transition: 'width 0.3s ease',
   },
   emptyState: {
     textAlign: 'center',

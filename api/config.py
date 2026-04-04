@@ -10,7 +10,7 @@ SETTLEMENTS_POSITIONS = list("abcdefghijklmnopqrstuvwxyz1ABCDEFGHIJKLMNOPQRSTUVW
 
 RESOURCES_MAP = {
     "wo": {"text": "Wood", "color": "#2d6a2d", "board_color": "#1b5e20"},
-    "b": {"text": "Brick", "color": "#c62828", "board_color": "#8d6e63"},
+    "b": {"text": "Brick", "color": "#c62828", "board_color": "#a0522d"},
     "o": {"text": "Ore", "color": "#616161", "board_color": "#9e9e9e"},
     "s": {"text": "Sheep", "color": "#7cb342", "board_color": "#aed581"},
     "w": {"text": "Wheat", "color": "#f9a825", "board_color": "#fdd835"},
