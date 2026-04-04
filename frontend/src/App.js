@@ -160,7 +160,7 @@ function AppContent() {
     <div style={styles.app}>
       <header style={styles.header}>
         <div className="header-inner" style={styles.headerInner}>
-          <h1 className="header-title" style={styles.headerTitle}>Catan Statistics</h1>
+          <h1 className="header-title" style={styles.headerTitle}>Catan Companion</h1>
           <div className="header-actions" style={styles.headerActions}>
             {gameId && (
               <>
