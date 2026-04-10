@@ -1,0 +1,15 @@
+.git
+.github
+.claude
+.venv
+__pycache__
+*.pyc
+node_modules
+frontend/node_modules
+frontend/build
+assets
+*.lock
+poetry.lock
+.env
+.DS_Store
+README.md

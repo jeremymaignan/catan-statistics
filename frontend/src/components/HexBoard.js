@@ -114,10 +114,10 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
             </text>
             {hex.tile.value > 0 && (
               <>
-                <circle cx={hex.x} cy={hex.y + 14} r="22" fill={hasRobber ? '#e0e0e0' : '#faf8f5'} stroke={hasRobber ? '#1a1a1a' : isHot ? '#c62828' : '#5d4037'} strokeWidth={hasRobber ? 2 : isHot ? 2 : 1.5} />
+                <circle cx={hex.x} cy={hex.y + 18} r="22" fill={hasRobber ? '#e0e0e0' : '#faf8f5'} stroke={hasRobber ? '#1a1a1a' : isHot ? '#c62828' : '#5d4037'} strokeWidth={hasRobber ? 2 : isHot ? 2 : 1.5} />
                 <text
                   x={hex.x}
-                  y={hex.y + 14}
+                  y={hex.y + 18}
                   textAnchor="middle"
                   dominantBaseline="central"
                   fontSize="20"
@@ -130,12 +130,18 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
                 {hasRobber && (
                   <g>
                     {/* Black interdit circle */}
-                    <circle cx={hex.x} cy={hex.y + 14} r="22" fill="none" stroke="#1a1a1a" strokeWidth="3" />
+                    <circle cx={hex.x} cy={hex.y + 18} r="22" fill="none" stroke="#1a1a1a" strokeWidth="3" />
                     {/* Diagonal cross line */}
-                    <line x1={hex.x - 15} y1={hex.y + 29} x2={hex.x + 15} y2={hex.y - 1} stroke="#1a1a1a" strokeWidth="3" strokeLinecap="round" />
+                    <line x1={hex.x - 15} y1={hex.y + 33} x2={hex.x + 15} y2={hex.y + 3} stroke="#1a1a1a" strokeWidth="3" strokeLinecap="round" />
                   </g>
                 )}
               </>
+            )}
+            {hex.tile.value === 0 && hasRobber && (
+              <g>
+                <circle cx={hex.x} cy={hex.y + 18} r="22" fill="none" stroke="#1a1a1a" strokeWidth="3" />
+                <line x1={hex.x - 15} y1={hex.y + 33} x2={hex.x + 15} y2={hex.y + 3} stroke="#1a1a1a" strokeWidth="3" strokeLinecap="round" />
+              </g>
             )}
           </g>
         );

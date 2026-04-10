@@ -31,6 +31,7 @@ function AppContent() {
   const [boardState, setBoardState] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [notFound, setNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const updateUrl = (id) => {
@@ -52,10 +53,15 @@ function AppContent() {
           setBoardState(state);
           localStorage.setItem('catan_game_id', gameId);
         })
-        .catch(() => {
-          localStorage.removeItem('catan_game_id');
-          updateUrl(null);
-          setGameId(null);
+        .catch((err) => {
+          if (err.status === 404 || err.status === 400) {
+            localStorage.removeItem('catan_game_id');
+            setNotFound(true);
+          } else {
+            localStorage.removeItem('catan_game_id');
+            updateUrl(null);
+            setGameId(null);
+          }
         })
         .finally(() => setLoading(false));
     }
@@ -128,6 +134,7 @@ function AppContent() {
     setGameId(null);
     setBoardState(null);
     setError(null);
+    setNotFound(false);
   };
 
   const handleShare = async () => {
@@ -184,7 +191,20 @@ function AppContent() {
           </div>
         )}
 
-        {!gameId ? (
+        {notFound ? (
+          <div style={styles.notFoundWrap}>
+            <div style={styles.notFoundCard}>
+              <div style={styles.notFoundIcon}>&#127922;</div>
+              <h2 style={styles.notFoundTitle}>Game Not Found</h2>
+              <p style={styles.notFoundText}>
+                This game doesn't exist or the link may have expired.
+              </p>
+              <button onClick={handleNewGame} style={styles.notFoundBtn}>
+                Create a New Game
+              </button>
+            </div>
+          </div>
+        ) : !gameId ? (
           <SetupForm
             onCreateGame={handleCreateGame}
             onUploadImage={handleUploadImage}
@@ -372,5 +392,52 @@ const styles = {
     borderTopColor: 'var(--text-secondary)',
     borderRadius: '50%',
     animation: 'spin 0.8s linear infinite',
+  },
+  notFoundWrap: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '60px 20px',
+  },
+  notFoundCard: {
+    textAlign: 'center',
+    background: 'var(--card-bg)',
+    borderRadius: 16,
+    padding: '48px 40px',
+    boxShadow: 'var(--shadow-card)',
+    border: '1px solid var(--border-subtle)',
+    maxWidth: 420,
+    width: '100%',
+  },
+  notFoundIcon: {
+    fontSize: 64,
+    marginBottom: 16,
+    filter: 'grayscale(0.3)',
+  },
+  notFoundTitle: {
+    margin: '0 0 8px',
+    fontSize: 24,
+    fontWeight: 700,
+    color: 'var(--text-primary)',
+    fontFamily: "'Inter', sans-serif",
+  },
+  notFoundText: {
+    margin: '0 0 28px',
+    fontSize: 15,
+    color: 'var(--text-muted)',
+    lineHeight: 1.5,
+  },
+  notFoundBtn: {
+    padding: '12px 32px',
+    background: 'var(--header-gradient)',
+    color: 'white',
+    border: 'none',
+    borderRadius: 10,
+    cursor: 'pointer',
+    fontWeight: 600,
+    fontSize: 15,
+    fontFamily: "'Inter', sans-serif",
+    transition: 'all 0.2s',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
   },
 };

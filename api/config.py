@@ -9,11 +9,11 @@ TILE_IMAGES_PATH = "/tmp/tiles"
 SETTLEMENTS_POSITIONS = list("abcdefghijklmnopqrstuvwxyz1ABCDEFGHIJKLMNOPQRSTUVWXYZ2")
 
 RESOURCES_MAP = {
-    "wo": {"text": "Wood", "color": "#2d6a2d", "board_color": "#1b5e20"},
-    "b": {"text": "Brick", "color": "#c62828", "board_color": "#a0522d"},
-    "o": {"text": "Ore", "color": "#616161", "board_color": "#9e9e9e"},
-    "s": {"text": "Sheep", "color": "#7cb342", "board_color": "#aed581"},
-    "w": {"text": "Wheat", "color": "#f9a825", "board_color": "#fdd835"},
+    "wo": {"text": "Wood", "color": "#2d6a2d", "board_color": "#4a9e4a"},
+    "b": {"text": "Brick", "color": "#c62828", "board_color": "#d4a373"},
+    "o": {"text": "Ore", "color": "#616161", "board_color": "#c5c5c5"},
+    "s": {"text": "Sheep", "color": "#7cb342", "board_color": "#c5e1a5"},
+    "w": {"text": "Wheat", "color": "#f9a825", "board_color": "#ffe082"},
     "r": {"text": "Desert", "color": "#d7ccc8", "board_color": "#efebe9"},
 }
 
@@ -51,7 +51,7 @@ INDEXES = {
 }
 
 ADJACENT_SETTLEMENT_POSITIONS = {
-    "a": "bi", "b": "aci", "c": "bdk", "d": "ce", "e": "dfm",
+    "a": "bi", "b": "ac", "c": "bdk", "d": "ce", "e": "dfm",
     "f": "eg", "g": "fo", "h": "ir", "i": "ahj", "j": "ikt",
     "k": "cjl", "l": "kmv", "m": "eln", "n": "mox", "o": "gnp",
     "p": "oz", "q": "Ar", "r": "hqs", "s": "Crt", "t": "jsu",

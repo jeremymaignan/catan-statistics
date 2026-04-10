@@ -44,7 +44,7 @@ export default function SetupBoardPreview({ resources, values, ports, onPortClic
             />
             {/* Resource name */}
             <text
-              x={hex.x} y={hex.y - (hex.value > 0 ? 28 : 0)}
+              x={hex.x} y={hex.y - (hex.value > 0 ? 24 : 0)}
               textAnchor="middle" dominantBaseline="central"
               fontSize="13" fontWeight="600"
               fontFamily="'Inter', sans-serif"
@@ -55,13 +55,13 @@ export default function SetupBoardPreview({ resources, values, ports, onPortClic
             {hex.value > 0 && (
               <>
                 <circle
-                  cx={hex.x} cy={hex.y} r="20"
+                  cx={hex.x} cy={hex.y + 8} r="20"
                   fill="#faf8f5"
                   stroke={isHot ? '#c62828' : '#5d4037'}
                   strokeWidth={isHot ? 2 : 1}
                 />
                 <text
-                  x={hex.x} y={hex.y}
+                  x={hex.x} y={hex.y + 8}
                   textAnchor="middle" dominantBaseline="central"
                   fontSize="18" fontWeight={isHot ? '800' : '600'}
                   fontFamily="'Inter', sans-serif"

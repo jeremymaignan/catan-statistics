@@ -83,4 +83,4 @@ export const PORT_EDGES = [
 /**
  * Colors considered dark enough to need white text overlay.
  */
-export const DARK_TILES = new Set(['#1b5e20', '#2d6a2d', '#2e7d32', '#616161', '#546e7a', '#c62828', '#a0522d', '#9e9e9e']);
+export const DARK_TILES = new Set([]);

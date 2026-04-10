@@ -21,7 +21,13 @@ export async function createGameFromImage(file) {
 
 export async function getGame(gameId) {
   const res = await fetch(`${API_BASE}/api/games/${gameId}`);
-  return res.json();
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data.error || 'Failed to load game');
+    err.status = res.status;
+    throw err;
+  }
+  return data;
 }
 
 export async function cycleSettlement(gameId, position) {

@@ -6,11 +6,11 @@
 // ── Resources ───────────────────────────────────────────────────────
 
 export const RESOURCES = [
-  { code: 'wo', label: 'Wood',   emoji: '\u{1F332}', color: '#1b5e20', boardColor: '#1b5e20', portType: 'wo_port' },
-  { code: 'b',  label: 'Brick',  emoji: '\u{1F9F1}', color: '#a0522d', boardColor: '#a0522d', portType: 'b_port' },
-  { code: 'o',  label: 'Ore',    emoji: '\u{26F0}\uFE0F',  color: '#757575', boardColor: '#9e9e9e', portType: 'o_port' },
-  { code: 's',  label: 'Sheep',  emoji: '\u{1F411}', color: '#aed581', boardColor: '#aed581', portType: 's_port' },
-  { code: 'w',  label: 'Wheat',  emoji: '\u{1F33E}', color: '#fdd835', boardColor: '#fdd835', portType: 'w_port' },
+  { code: 'wo', label: 'Wood',   emoji: '\u{1F332}', color: '#1b5e20', boardColor: '#4a9e4a', portType: 'wo_port' },
+  { code: 'b',  label: 'Brick',  emoji: '\u{1F9F1}', color: '#a0522d', boardColor: '#d4a373', portType: 'b_port' },
+  { code: 'o',  label: 'Ore',    emoji: '\u{26F0}\uFE0F',  color: '#757575', boardColor: '#c5c5c5', portType: 'o_port' },
+  { code: 's',  label: 'Sheep',  emoji: '\u{1F411}', color: '#aed581', boardColor: '#c5e1a5', portType: 's_port' },
+  { code: 'w',  label: 'Wheat',  emoji: '\u{1F33E}', color: '#fdd835', boardColor: '#ffe082', portType: 'w_port' },
 ];
 
 export const DESERT = { code: 'r', label: 'Desert', emoji: '\u{1F3DC}\uFE0F', color: '#a1887f', boardColor: '#efebe9' };

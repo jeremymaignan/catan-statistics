@@ -189,14 +189,63 @@ function robberPlacementTips(ctx) {
 
   const best = candidates[0];
   const r = RESOURCE_BY_CODE[best.tile.resource];
-  const resLabel = r ? `${r.emoji} ${r.label}` : best.tile.text;
+  const resLabel = r ? `${r.emoji} ${r.label} (${best.tile.value})` : `${best.tile.text} (${best.tile.value})`;
   const oppText = best.opponentCount > 1
     ? `blocks ${best.opponentCount} opponent positions`
     : 'blocks 1 opponent position';
 
   return [{
     type: 'info',
-    text: `Best robber spot: tile ${best.tile.value} ${resLabel} (${best.diceRate}/36) \u2014 ${oppText}.`,
+    text: `Best robber spot: ${resLabel} (${best.diceRate}/36) \u2014 ${oppText}.`,
+  }];
+}
+
+function cityUpgradeTips(ctx) {
+  const { settlements, positions, tilesByIndex } = ctx;
+  if (!settlements || !positions || !tilesByIndex) return [];
+
+  // Find all colonies (not cities, not opponents)
+  const colonies = Object.entries(settlements)
+    .filter(([, type]) => type === 'colony')
+    .map(([pos]) => pos);
+
+  if (colonies.length === 0) return [];
+
+  // For each colony, calculate the extra production gained by upgrading to city.
+  // A city produces 2x, so upgrading adds 1x the base rate (the same as colony).
+  // We sum the dice rates of adjacent non-desert, non-robbed tiles.
+  const candidates = colonies.map(pos => {
+    const posData = positions[pos];
+    if (!posData || !posData.tile_details) return null;
+
+    let extraRate = 0;
+    const tileInfos = [];
+    for (const tile of posData.tile_details) {
+      if (tile.value === 0) continue;          // desert
+      if (tile.has_robber) continue;            // blocked by robber
+      extraRate += tile.rate || 0;
+      const r = RESOURCE_BY_CODE[tile.resource];
+      if (r) {
+        tileInfos.push({ resource: r, value: tile.value });
+      }
+    }
+
+    return { pos, extraRate, tileInfos, score: posData.score };
+  }).filter(Boolean);
+
+  if (candidates.length === 0) return [];
+
+  // Sort by extra production gained (highest first)
+  candidates.sort((a, b) => b.extraRate - a.extraRate);
+
+  const best = candidates[0];
+  if (best.extraRate === 0) return [];
+
+  const resText = best.tileInfos.map(t => `${t.resource.emoji} ${t.resource.label} (${t.value})`).join(', ');
+
+  return [{
+    type: 'info',
+    text: `Best city upgrade: position ${best.pos} (+${best.extraRate}/36) producing ${resText}.`,
   }];
 }
 
@@ -212,6 +261,7 @@ const TIP_GENERATORS = [
   strongestResourceTips,
   noPortTips,
   robberPlacementTips,
+  cityUpgradeTips,
 ];
 
 // ── Main logic ──────────────────────────────────────────────────────

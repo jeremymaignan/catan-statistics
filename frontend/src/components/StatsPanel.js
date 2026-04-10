@@ -143,7 +143,7 @@ export default function StatsPanel({ statistics, settlements }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.entries(per_resource).map(([code, info]) => {
+                  {Object.entries(per_resource).sort((a, b) => (b[1].rate || 0) - (a[1].rate || 0)).map(([code, info]) => {
                     const isBlocked = info.blocked;
                     const blockedStyle = isBlocked ? { textDecoration: 'line-through', color: 'var(--text-disabled)' } : {};
                     return (
