@@ -3,10 +3,13 @@ import { RESOURCES, RESOURCE_BY_CODE, computeTradingRates } from '../shared/cons
 
 // ── Tip severity levels ─────────────────────────────────────────────
 const TIP_STYLES = {
+  danger:  { icon: '\u{1F6A8}',    bg: 'var(--tip-danger-bg)',  border: 'var(--tip-danger-border)',  color: 'var(--tip-danger-text)' },
   warning: { icon: '\u26A0\uFE0F', bg: 'var(--tip-warning-bg)', border: 'var(--tip-warning-border)', color: 'var(--tip-warning-text)' },
   success: { icon: '\u2705',       bg: 'var(--tip-success-bg)', border: 'var(--tip-success-border)', color: 'var(--tip-success-text)' },
   info:    { icon: '\u{1F4A1}',    bg: 'var(--tip-info-bg)',    border: 'var(--tip-info-border)',    color: 'var(--tip-info-text)' },
 };
+
+const TIP_ORDER = { danger: 0, warning: 1, success: 2, info: 3 };
 
 // ── Helpers (available to all generators) ────────────────────────────
 
@@ -51,7 +54,7 @@ function buildContext(statistics, ports, settlements, boardScarcity, positions, 
 
 // ── Tip generators ──────────────────────────────────────────────────
 // Each generator receives a `ctx` object and returns an array of tips.
-// A tip is { type: 'warning'|'success'|'info', text: string }.
+// A tip is { type: 'danger'|'warning'|'success'|'info', text: string }.
 // To add a new category, just write a function and push it into TIP_GENERATORS.
 
 function missingResourceTips(ctx) {
@@ -60,10 +63,10 @@ function missingResourceTips(ctx) {
     const scarcity = ctx.boardScarcity && ctx.boardScarcity[r.code];
     const isScarce = scarcity && scarcity.total_rate <= 4;
     tips.push({
-      type: 'warning',
+      type: 'danger',
       text: isScarce
-        ? `You have no ${r.emoji} ${r.label} production, and it's scarce on the board. Consider trading for it or securing a port.`
-        : `You have no ${r.emoji} ${r.label} production. Try to place a settlement near ${r.label}.`,
+        ? `You have no ${r.emoji} ${r.label} production, and it's scarce on the board.`
+        : `You have no ${r.emoji} ${r.label} production.`,
     });
   }
   return tips;
@@ -77,7 +80,7 @@ function weakResourceTips(ctx) {
       if (r) {
         tips.push({
           type: 'warning',
-          text: `Your ${r.emoji} ${r.label} production is weak (${rate}/36). Look for a stronger ${r.label} tile.`,
+          text: `Your ${r.emoji} ${r.label} production is weak (${rate}/36).`,
         });
       }
     }
@@ -93,7 +96,7 @@ function portSynergyTips(ctx) {
       if (r) {
         tips.push({
           type: 'success',
-          text: `Great combo: strong ${r.emoji} ${r.label} production (${rate}/36) with a 2:1 port. Use it to trade for what you need.`,
+          text: `Great combo: strong ${r.emoji} ${r.label} production (${rate}/36) with a 2:1 port.`,
         });
       }
     }
@@ -103,7 +106,7 @@ function portSynergyTips(ctx) {
 
 function diversityTips(ctx) {
   if (ctx.missing.length === 0) {
-    return [{ type: 'success', text: 'You produce all 5 resources. Good diversity!' }];
+    return [{ type: 'success', text: 'You produce all 5 resources.' }];
   }
   return [];
 }
@@ -126,8 +129,8 @@ function noPortTips(ctx) {
   const hasAny = Object.values(ctx.tradingRates).some(r => r < 4);
   if (!hasAny && Object.keys(ctx.activeRates).length > 0) {
     return [{
-      type: 'info',
-      text: 'You have no port access yet. Ports give you better trading rates (3:1 or 2:1).',
+      type: 'warning',
+      text: 'You have no port access yet.',
     }];
   }
   return [];
@@ -245,7 +248,7 @@ function cityUpgradeTips(ctx) {
 
   return [{
     type: 'info',
-    text: `Best city upgrade: producing ${resText} (+${best.extraRate}/36).`,
+    text: `Best city upgrade: ${resText} (+${best.extraRate}/36).`,
   }];
 }
 
@@ -279,6 +282,7 @@ function generateTips(statistics, ports, settlements, boardScarcity, positions, 
   for (const generator of TIP_GENERATORS) {
     tips.push(...generator(ctx));
   }
+  tips.sort((a, b) => (TIP_ORDER[a.type] ?? 99) - (TIP_ORDER[b.type] ?? 99));
   return tips;
 }
 

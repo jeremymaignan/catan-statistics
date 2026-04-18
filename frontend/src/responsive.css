@@ -41,6 +41,9 @@
 
   --toggle-bg: #ede7e0;
 
+  --tip-danger-bg: #fef2f2;
+  --tip-danger-border: #fecaca;
+  --tip-danger-text: #b91c1c;
   --tip-warning-bg: #fff8e1;
   --tip-warning-border: #ffe082;
   --tip-warning-text: #e65100;
@@ -111,6 +114,9 @@
 
   --toggle-bg: #2a2a4a;
 
+  --tip-danger-bg: #3a1a1a;
+  --tip-danger-border: #7f1d1d;
+  --tip-danger-text: #f87171;
   --tip-warning-bg: #3a2e10;
   --tip-warning-border: #6b5a20;
   --tip-warning-text: #fbbf24;
@@ -172,6 +178,7 @@
 .setup-board-svg {
   max-width: 840px;
   margin: 0 auto;
+  overflow: visible;
 }
 
 /* Game layout: side by side on desktop, stacked on mobile */

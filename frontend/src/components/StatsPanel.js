@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { RESOURCE_EMOJIS } from '../shared/constants';
+import ResourceRadar from './ResourceRadar';
 
 const DICE_PROBABILITIES = [
   { roll: 2,  combos: 1,  proba: '2.78%',  dots: 1 },
@@ -177,6 +178,9 @@ export default function StatsPanel({ statistics, settlements }) {
               </table>
             </div>
           </div>
+
+          {/* Resource balance radar */}
+          <ResourceRadar perResource={per_resource} />
 
         </>
       )}
