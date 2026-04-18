@@ -33,6 +33,7 @@ function AppContent() {
   const [error, setError] = useState(null);
   const [notFound, setNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [rotation, setRotation] = useState(0);
 
   const updateUrl = (id) => {
     const url = new URL(window.location);
@@ -220,7 +221,21 @@ function AppContent() {
                   ports={boardState.ports}
                   onPositionClick={handlePositionClick}
                   onTileClick={handleTileClick}
+                  rotation={rotation}
                 />
+                <div style={styles.boardControls}>
+                  <button
+                    onClick={() => setRotation((r) => r + 90)}
+                    style={styles.rotateBtn}
+                    title="Rotate board 90°"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 4v6h6" />
+                      <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                    </svg>
+                    <span>Rotate</span>
+                  </button>
+                </div>
                 <BoardLegend />
               </div>
             </div>
@@ -392,6 +407,27 @@ const styles = {
     borderTopColor: 'var(--text-secondary)',
     borderRadius: '50%',
     animation: 'spin 0.8s linear infinite',
+  },
+  boardControls: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginTop: 8,
+    marginBottom: 4,
+  },
+  rotateBtn: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 6,
+    border: '1px solid var(--border-main)',
+    borderRadius: 8,
+    background: 'var(--card-inner-bg)',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    padding: '6px 14px',
+    fontFamily: "'Inter', sans-serif",
+    fontSize: 12,
+    fontWeight: 600,
+    color: 'var(--text-muted)',
   },
   notFoundWrap: {
     display: 'flex',

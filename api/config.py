@@ -60,7 +60,7 @@ ADJACENT_SETTLEMENT_POSITIONS = {
     "A": "Bq", "B": "ACL", "C": "BDs", "D": "CEN", "E": "DFu",
     "F": "EGP", "G": "FHw", "H": "GIR", "I": "HJy", "J": "IKT",
     "K": "1J", "L": "BM", "M": "LNU", "N": "DMO", "O": "NPW",
-    "P": "FOQ", "Q": "PRY", "R": "GHS", "S": "2RT", "T": "JS",
+    "P": "FOQ", "Q": "PRY", "R": "HQS", "S": "2RT", "T": "JS",
     "U": "MV", "V": "UW", "W": "OVX", "X": "WY",
     "Y": "QXZ", "Z": "2Y", "2": "SZ",
 }

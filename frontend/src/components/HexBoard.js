@@ -11,7 +11,7 @@ function getRankColor(rank, totalRanks) {
   return { fill: '#e53935', stroke: '#c62828', text: '#fff' };                  // red
 }
 
-export default function HexBoard({ tiles, positions, ports, onPositionClick, onTileClick }) {
+export default function HexBoard({ tiles, positions, ports, onPositionClick, onTileClick, rotation = 0 }) {
   const [hoveredPos, setHoveredPos] = useState(null);
   const [tooltipData, setTooltipData] = useState(null);
 
@@ -55,6 +55,12 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
     return { x: tx, y: ty };
   };
 
+  // Counter-rotation for text so it stays upright
+  const cx = BOARD_CENTER.x;
+  const cy = BOARD_CENTER.y;
+  const rot = rotation;
+  const textRotate = (x, y) => `rotate(${-rot}, ${x}, ${y})`;
+
   return (
     <svg viewBox="-40 -20 940 740" className="hex-board-svg">
       <defs>
@@ -71,6 +77,8 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
           <feDropShadow dx="0" dy="1" stdDeviation="2" floodOpacity="0.2" />
         </filter>
       </defs>
+
+      <g transform={`rotate(${rot}, ${cx}, ${cy})`} style={{ transition: 'transform 0.4s ease' }}>
 
       {/* Draw hexagons */}
       {hexData.map((hex, i) => {
@@ -101,48 +109,51 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
                 strokeLinejoin="round"
               />
             )}
-            <text
-              x={hex.x}
-              y={hex.y - 14}
-              textAnchor="middle"
-              fontSize="14"
-              fontWeight="600"
-              fontFamily="'Inter', sans-serif"
-              fill={hasRobber ? 'rgba(255,255,255,0.7)' : isDark ? 'rgba(255,255,255,0.9)' : '#3e2723'}
-            >
-              {hex.tile.text}
-            </text>
-            {hex.tile.value > 0 && (
-              <>
-                <circle cx={hex.x} cy={hex.y + 18} r="22" fill={hasRobber ? '#e0e0e0' : '#faf8f5'} stroke={hasRobber ? '#1a1a1a' : isHot ? '#c62828' : '#5d4037'} strokeWidth={hasRobber ? 2 : isHot ? 2 : 1.5} />
-                <text
-                  x={hex.x}
-                  y={hex.y + 18}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  fontSize="20"
-                  fontWeight={isHot ? '800' : '600'}
-                  fontFamily="'Inter', sans-serif"
-                  fill={hasRobber ? '#1a1a1a' : isHot ? '#c62828' : '#3e2723'}
-                >
-                  {hex.tile.value}
-                </text>
-                {hasRobber && (
-                  <g>
-                    {/* Black interdit circle */}
-                    <circle cx={hex.x} cy={hex.y + 18} r="22" fill="none" stroke="#1a1a1a" strokeWidth="3" />
-                    {/* Diagonal cross line */}
-                    <line x1={hex.x - 15} y1={hex.y + 33} x2={hex.x + 15} y2={hex.y + 3} stroke="#1a1a1a" strokeWidth="3" strokeLinecap="round" />
-                  </g>
-                )}
-              </>
-            )}
-            {hex.tile.value === 0 && hasRobber && (
-              <g>
-                <circle cx={hex.x} cy={hex.y + 18} r="22" fill="none" stroke="#1a1a1a" strokeWidth="3" />
-                <line x1={hex.x - 15} y1={hex.y + 33} x2={hex.x + 15} y2={hex.y + 3} stroke="#1a1a1a" strokeWidth="3" strokeLinecap="round" />
-              </g>
-            )}
+            {/* Counter-rotate resource name + dice value as a group around tile center */}
+            <g transform={textRotate(hex.x, hex.y)}>
+              <text
+                x={hex.x}
+                y={hex.y - 14}
+                textAnchor="middle"
+                fontSize="14"
+                fontWeight="600"
+                fontFamily="'Inter', sans-serif"
+                fill={hasRobber ? 'rgba(255,255,255,0.7)' : isDark ? 'rgba(255,255,255,0.9)' : '#3e2723'}
+              >
+                {hex.tile.text}
+              </text>
+              {hex.tile.value > 0 && (
+                <>
+                  <circle cx={hex.x} cy={hex.y + 18} r="22" fill={hasRobber ? '#e0e0e0' : '#faf8f5'} stroke={hasRobber ? '#1a1a1a' : isHot ? '#c62828' : '#5d4037'} strokeWidth={hasRobber ? 2 : isHot ? 2 : 1.5} />
+                  <text
+                    x={hex.x}
+                    y={hex.y + 18}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontSize="20"
+                    fontWeight={isHot ? '800' : '600'}
+                    fontFamily="'Inter', sans-serif"
+                    fill={hasRobber ? '#1a1a1a' : isHot ? '#c62828' : '#3e2723'}
+                  >
+                    {hex.tile.value}
+                  </text>
+                  {hasRobber && (
+                    <g>
+                      {/* Black interdit circle */}
+                      <circle cx={hex.x} cy={hex.y + 18} r="22" fill="none" stroke="#1a1a1a" strokeWidth="3" />
+                      {/* Diagonal cross line */}
+                      <line x1={hex.x - 15} y1={hex.y + 33} x2={hex.x + 15} y2={hex.y + 3} stroke="#1a1a1a" strokeWidth="3" strokeLinecap="round" />
+                    </g>
+                  )}
+                </>
+              )}
+              {hex.tile.value === 0 && hasRobber && (
+                <g>
+                  <circle cx={hex.x} cy={hex.y + 18} r="22" fill="none" stroke="#1a1a1a" strokeWidth="3" />
+                  <line x1={hex.x - 15} y1={hex.y + 33} x2={hex.x + 15} y2={hex.y + 3} stroke="#1a1a1a" strokeWidth="3" strokeLinecap="round" />
+                </g>
+              )}
+            </g>
           </g>
         );
       })}
@@ -186,45 +197,47 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
             {/* Dots on vertices */}
             <circle cx={pA.x} cy={pA.y} r="5" fill={colors.stroke} opacity="0.8" />
             <circle cx={pB.x} cy={pB.y} r="5" fill={colors.stroke} opacity="0.8" />
-            {/* Port pill badge */}
-            <rect
-              x={badgeX - 40}
-              y={badgeY - (sublabel ? 22 : 14)}
-              width="80"
-              height={sublabel ? 46 : 28}
-              rx="14"
-              fill={colors.fill}
-              stroke={colors.stroke}
-              strokeWidth="1.5"
-              filter="url(#port-shadow)"
-            />
-            <text
-              x={badgeX}
-              y={badgeY + (sublabel ? -7 : 0)}
-              textAnchor="middle"
-              dominantBaseline="central"
-              fontSize="13"
-              fontWeight="700"
-              fontFamily="'Inter', sans-serif"
-              fill={colors.text}
-            >
-              {label}
-            </text>
-            {sublabel && (
+            {/* Port pill badge - counter-rotate so text stays upright */}
+            <g transform={textRotate(badgeX, badgeY)}>
+              <rect
+                x={badgeX - 40}
+                y={badgeY - (sublabel ? 22 : 14)}
+                width="80"
+                height={sublabel ? 46 : 28}
+                rx="14"
+                fill={colors.fill}
+                stroke={colors.stroke}
+                strokeWidth="1.5"
+                filter="url(#port-shadow)"
+              />
               <text
                 x={badgeX}
-                y={badgeY + 14}
+                y={badgeY + (sublabel ? -7 : 0)}
                 textAnchor="middle"
                 dominantBaseline="central"
-                fontSize="12"
-                fontWeight="600"
+                fontSize="13"
+                fontWeight="700"
                 fontFamily="'Inter', sans-serif"
                 fill={colors.text}
-                opacity="0.8"
               >
-                {sublabel}
+                {label}
               </text>
-            )}
+              {sublabel && (
+                <text
+                  x={badgeX}
+                  y={badgeY + 14}
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  fontSize="12"
+                  fontWeight="600"
+                  fontFamily="'Inter', sans-serif"
+                  fill={colors.text}
+                  opacity="0.8"
+                >
+                  {sublabel}
+                </text>
+              )}
+            </g>
           </g>
         );
       })}
@@ -249,30 +262,30 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
             onMouseLeave={handleMouseLeave}
           >
             {status === 'colony' ? (
-              <>
+              <g transform={textRotate(pixel.x, pixel.y)}>
                 <rect x={pixel.x - 13} y={pixel.y - 13} width="26" height="26" rx="5" fill="#7b1fa2" stroke="#6a1b9a" strokeWidth="2" />
                 <text x={pixel.x} y={pixel.y + 1} textAnchor="middle" dominantBaseline="middle" fontSize="13" fill="white" fontWeight="bold">
                   {'\u25B2'}
                 </text>
-              </>
+              </g>
             ) : status === 'city' ? (
-              <>
+              <g transform={textRotate(pixel.x, pixel.y)}>
                 <rect x={pixel.x - 13} y={pixel.y - 13} width="26" height="26" rx="5" fill="#1565c0" stroke="#0d47a1" strokeWidth="2" />
                 <text x={pixel.x} y={pixel.y + 1} textAnchor="middle" dominantBaseline="middle" fontSize="15" fill="white" fontWeight="bold">
                   {'\u2605'}
                 </text>
-              </>
+              </g>
             ) : status === 'opponent' ? (
-              <>
+              <g transform={textRotate(pixel.x, pixel.y)}>
                 <rect x={pixel.x - 13} y={pixel.y - 13} width="26" height="26" rx="5" fill="#212121" stroke="#000" strokeWidth="2" />
                 <text x={pixel.x} y={pixel.y + 1} textAnchor="middle" dominantBaseline="middle" fontSize="13" fill="white" fontWeight="bold">
                   {'\u2716'}
                 </text>
-              </>
+              </g>
             ) : status === 'blocked' ? (
               <circle cx={pixel.x} cy={pixel.y} r="5" fill="#ccc" opacity="0.5" />
             ) : status === 'available' ? (
-              <>
+              <g transform={textRotate(pixel.x, pixel.y)}>
                 <circle
                   cx={pixel.x}
                   cy={pixel.y}
@@ -294,7 +307,7 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
                 >
                   {info.rank}
                 </text>
-              </>
+              </g>
             ) : null}
           </g>
         );
@@ -312,8 +325,11 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
         const tooltipH = headerH + nonDesert.length * rowHeight + footerH + 4;
         const tp = getTooltipPos(pixel);
 
+        const tooltipCx = tp.x + tooltipW / 2;
+        const tooltipCy = tp.y + tooltipH / 2;
+
         return (
-          <g filter="url(#tooltipShadow)" style={{ pointerEvents: 'none' }}>
+          <g filter="url(#tooltipShadow)" style={{ pointerEvents: 'none' }} transform={textRotate(tooltipCx, tooltipCy)}>
             <rect
               x={tp.x}
               y={tp.y}
@@ -398,6 +414,7 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
           </g>
         );
       })()}
+      </g>
     </svg>
   );
 }
