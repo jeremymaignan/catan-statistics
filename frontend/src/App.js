@@ -33,8 +33,10 @@ function AppContent() {
   const [notFound, setNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
   const [rotation, setRotation] = useState(0);
+  const [zoom, setZoom] = useState(100);
   const [toasts, setToasts] = useState([]);
   const toastIdRef = useRef(0);
+  const boardAreaRef = useRef(null);
 
   const addToast = useCallback((message) => {
     const id = ++toastIdRef.current;
@@ -48,6 +50,14 @@ function AppContent() {
   useEffect(() => {
     onApiError((msg) => addToast(msg));
   }, [addToast]);
+
+  // Scroll board to center when zoom changes
+  useEffect(() => {
+    const el = boardAreaRef.current;
+    if (!el) return;
+    el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
+    el.scrollTop = (el.scrollHeight - el.clientHeight) / 2;
+  }, [zoom]);
 
   const updateUrl = (id) => {
     const url = new URL(window.location);
@@ -207,29 +217,57 @@ function AppContent() {
         ) : boardState ? (
           <div className="game-layout">
             <div className="board-section">
-              <div className="board-wrapper">
-                <HexBoard
-                  tiles={boardState.tiles}
-                  positions={boardState.positions}
-                  ports={boardState.ports}
-                  onPositionClick={handlePositionClick}
-                  onTileClick={handleTileClick}
-                  rotation={rotation}
-                />
-                <div style={styles.boardControls}>
-                  <button
-                    onClick={() => setRotation((r) => r + 90)}
-                    style={styles.rotateBtn}
-                    title="Rotate board 90°"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M1 4v6h6" />
-                      <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
-                    </svg>
-                    <span>Rotate</span>
-                  </button>
+              <div className="board-area" ref={boardAreaRef}>
+                <div style={{ width: `${zoom}%`, margin: '0 auto' }}>
+                  <HexBoard
+                    tiles={boardState.tiles}
+                    positions={boardState.positions}
+                    ports={boardState.ports}
+                    onPositionClick={handlePositionClick}
+                    onTileClick={handleTileClick}
+                    rotation={rotation}
+                  />
                 </div>
+              </div>
+              <div className="board-toolbar">
                 <BoardLegend />
+                <div style={styles.toolbarDivider} />
+                <button
+                  onClick={() => setZoom(z => Math.max(50, z - 10))}
+                  style={{ ...styles.toolbarBtn, ...(zoom <= 50 ? styles.toolbarBtnDisabled : {}) }}
+                  title="Zoom out"
+                  disabled={zoom <= 50}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    <line x1="8" y1="11" x2="14" y2="11" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setZoom(z => Math.min(200, z + 10))}
+                  style={{ ...styles.toolbarBtn, ...(zoom >= 200 ? styles.toolbarBtnDisabled : {}) }}
+                  title="Zoom in"
+                  disabled={zoom >= 200}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    <line x1="11" y1="8" x2="11" y2="14" />
+                    <line x1="8" y1="11" x2="14" y2="11" />
+                  </svg>
+                </button>
+                <div style={styles.toolbarDivider} />
+                <button
+                  onClick={() => setRotation((r) => r + 90)}
+                  style={styles.toolbarBtn}
+                  title="Rotate board 90°"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M1 4v6h6" />
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                  </svg>
+                </button>
               </div>
             </div>
             <div className="stats-section">
@@ -429,7 +467,6 @@ const styles = {
     padding: '24px 12px',
     maxWidth: 1400,
     margin: '0 auto',
-    overflowX: 'hidden',
   },
   toastContainer: {
     position: 'fixed',
@@ -489,26 +526,28 @@ const styles = {
     borderRadius: '50%',
     animation: 'spin 0.8s linear infinite',
   },
-  boardControls: {
-    display: 'flex',
-    justifyContent: 'center',
-    marginTop: 8,
-    marginBottom: 4,
-  },
-  rotateBtn: {
+  toolbarBtn: {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: 6,
-    border: '1px solid var(--border-main)',
+    justifyContent: 'center',
+    width: 36,
+    height: 36,
+    border: 'none',
     borderRadius: 8,
-    background: 'var(--card-inner-bg)',
+    background: 'transparent',
     cursor: 'pointer',
-    transition: 'all 0.2s',
-    padding: '6px 14px',
-    fontFamily: "'Inter', sans-serif",
-    fontSize: 12,
-    fontWeight: 600,
-    color: 'var(--text-muted)',
+    transition: 'all 0.15s',
+    color: 'var(--text-body)',
+    padding: 0,
+  },
+  toolbarBtnDisabled: {
+    opacity: 0.3,
+    cursor: 'default',
+  },
+  toolbarDivider: {
+    width: 1,
+    height: 20,
+    background: 'var(--border-main)',
   },
   notFoundWrap: {
     display: 'flex',

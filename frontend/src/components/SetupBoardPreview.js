@@ -23,7 +23,7 @@ export default function SetupBoardPreview({ resources, values, ports, blockedEdg
   }
 
   return (
-    <svg viewBox="-40 -20 940 740" className="hex-board-svg setup-board-svg">
+    <svg viewBox="-50 10 960 660" className="hex-board-svg setup-board-svg">
       <defs>
         <filter id="port-shadow" x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow dx="0" dy="1" stdDeviation="2" floodOpacity="0.2" />

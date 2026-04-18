@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const ITEMS = [
   {
@@ -56,30 +56,43 @@ const ITEMS = [
 
 export default function BoardLegend() {
   const [expanded, setExpanded] = useState(false);
+  const wrapperRef = useRef(null);
+
+  // Close on click outside
+  useEffect(() => {
+    if (!expanded) return;
+    const handleClick = (e) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+        setExpanded(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [expanded]);
 
   return (
-    <div style={styles.wrapper}>
+    <div style={styles.wrapper} ref={wrapperRef}>
       <button
         style={styles.toggle}
         onClick={() => setExpanded(v => !v)}
+        title="Legend"
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10" />
           <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
           <line x1="12" y1="17" x2="12.01" y2="17" />
         </svg>
-        <span style={styles.toggleText}>Legend</span>
-        <svg
-          width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-hint)"
-          strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-          style={{ transform: expanded ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }}
-        >
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
       </button>
 
       {expanded && (
-        <div style={styles.container}>
+        <div style={styles.popover}>
+          <button
+            style={styles.closeBtn}
+            onClick={() => setExpanded(false)}
+            title="Close legend"
+          >
+            &times;
+          </button>
           <div style={styles.grid}>
             {ITEMS.map(item => (
               <div key={item.label} style={styles.item}>
@@ -108,37 +121,49 @@ export default function BoardLegend() {
 
 const styles = {
   wrapper: {
-    marginTop: 8,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    position: 'relative',
   },
   toggle: {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: 6,
-    background: 'none',
+    justifyContent: 'center',
+    width: 36,
+    height: 36,
     border: 'none',
-    cursor: 'pointer',
-    padding: '4px 10px',
     borderRadius: 8,
-    color: 'var(--text-muted)',
-    fontSize: 13,
-    fontWeight: 600,
-    fontFamily: "'Inter', sans-serif",
+    background: 'transparent',
+    cursor: 'pointer',
+    transition: 'all 0.15s',
+    color: 'var(--text-body)',
+    padding: 0,
   },
-  toggleText: {
-    color: 'var(--text-muted)',
-  },
-  container: {
-    marginTop: 8,
+  popover: {
+    position: 'absolute',
+    bottom: '100%',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    marginBottom: 10,
     padding: '12px 16px',
     background: 'var(--card-bg)',
     borderRadius: 12,
     border: '1px solid var(--border-main)',
-    boxShadow: 'var(--shadow-card)',
-    maxWidth: 520,
-    width: '100%',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+    width: 520,
+    maxWidth: '90vw',
+    zIndex: 600,
+  },
+  closeBtn: {
+    position: 'absolute',
+    top: 6,
+    right: 8,
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: 20,
+    lineHeight: 1,
+    color: 'var(--text-hint)',
+    padding: '2px 6px',
+    borderRadius: 6,
   },
   grid: {
     display: 'flex',

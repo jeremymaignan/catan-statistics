@@ -161,12 +161,6 @@
   animation: toast-in 0.3s ease-out;
 }
 
-/* Board + legend wrapper: constrains both to same width */
-.board-wrapper {
-  max-width: 960px;
-  margin: 0 auto;
-}
-
 /* SVG board scales with container */
 .hex-board-svg {
   display: block;
@@ -176,7 +170,7 @@
 
 /* Setup page board preview: smaller than game board */
 .setup-board-svg {
-  max-width: 660px;
+  max-width: 840px;
   margin: 0 auto;
 }
 
@@ -185,13 +179,38 @@
   display: flex;
   gap: 24px;
   flex-wrap: wrap;
-  overflow: hidden;
 }
 
 .board-section {
   flex: 1 1 620px;
   min-width: 0;
-  max-width: 100%;
+  position: sticky;
+  top: 56px;
+  align-self: flex-start;
+  height: calc(100vh - 56px - 24px);
+  display: flex;
+  flex-direction: column;
+}
+
+.board-area {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+}
+
+.board-toolbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px;
+  margin: 8px auto;
+  width: fit-content;
+  background: var(--card-bg);
+  border: 1px solid var(--border-main);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
 
 .stats-section {
@@ -253,8 +272,15 @@
   }
 
   .board-section {
+    position: static;
+    height: auto;
     flex: 1 1 auto;
     width: 100%;
+  }
+
+  .board-area {
+    overflow: visible;
+    display: block;
   }
 
   .stats-section {

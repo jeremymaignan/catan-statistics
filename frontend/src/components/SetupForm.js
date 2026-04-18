@@ -30,12 +30,12 @@ const EXPECTED_PORTS = {
 };
 
 const PORT_VALIDATION_ORDER = [
+  { code: '3:1', label: '3:1', emoji: '\u{1F6A2}', color: '#6d4c41' },
   { code: 'wo_port', label: 'Wood', emoji: '\u{1F332}', color: '#1b5e20' },
   { code: 'b_port', label: 'Brick', emoji: '\u{1F9F1}', color: '#a0522d' },
   { code: 'o_port', label: 'Ore', emoji: '\u{26F0}\uFE0F', color: '#757575' },
   { code: 's_port', label: 'Sheep', emoji: '\u{1F411}', color: '#aed581' },
   { code: 'w_port', label: 'Wheat', emoji: '\u{1F33E}', color: '#fdd835' },
-  { code: '3:1', label: '3:1', emoji: '\u{1F6A2}', color: '#6d4c41' },
 ];
 
 export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
