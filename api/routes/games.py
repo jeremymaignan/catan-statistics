@@ -48,11 +48,15 @@ def create_game():
 
     ports = data.get("ports", None)
     if ports is not None:
-        if len(ports) != 9:
-            return jsonify({"error": "Exactly 9 ports required"}), 400
+        if not isinstance(ports, list):
+            return jsonify({"error": "Ports must be a list"}), 400
         for p in ports:
-            if p not in PORT_TYPES:
-                return jsonify({"error": f"Invalid port type: {p}"}), 400
+            if not isinstance(p, dict) or "type" not in p or "positions" not in p:
+                return jsonify({"error": "Each port must have 'type' and 'positions'"}), 400
+            if p["type"] not in PORT_TYPES:
+                return jsonify({"error": f"Invalid port type: {p['type']}"}), 400
+            if not isinstance(p["positions"], list) or len(p["positions"]) != 2:
+                return jsonify({"error": "Each port must have exactly 2 positions"}), 400
 
     game = new_game(resources, [str(v) for v in values], ports=ports)
     result = get_db().games.insert_one(game)
@@ -208,7 +212,13 @@ def clone_game(game_id):
     if not game:
         return jsonify({"error": "Game not found"}), 404
 
-    clone = new_game(list(game["resources"]), list(game["values"]), ports=list(game.get("ports", [])) or None)
+    raw_ports = game.get("ports", [])
+    # Deep copy ports (supports both old string format and new dict format)
+    if raw_ports and isinstance(raw_ports[0], dict):
+        cloned_ports = [dict(p) for p in raw_ports]
+    else:
+        cloned_ports = list(raw_ports) if raw_ports else None
+    clone = new_game(list(game["resources"]), list(game["values"]), ports=cloned_ports or None)
     result = get_db().games.insert_one(clone)
 
     return jsonify({

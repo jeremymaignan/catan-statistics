@@ -1,8 +1,10 @@
 import React from 'react';
-import { BOARD_ROWS, TILE_CENTERS, hexPoints, getSettlementPixel, BOARD_CENTER, PORT_EDGES, DARK_TILES } from '../shared/boardGeometry';
+import { BOARD_ROWS, TILE_CENTERS, hexPoints, getSettlementPixel, BOARD_CENTER, ALL_COASTAL_EDGES, DARK_TILES } from '../shared/boardGeometry';
 import { RESOURCE_BOARD_COLORS, RESOURCE_LABELS, PORT_COLORS, PORT_EMOJI_LABELS, PORT_SUBLABELS } from '../shared/constants';
 
-export default function SetupBoardPreview({ resources, values, ports, onPortClick }) {
+const edgeKey = (a, b) => `${a}-${b}`;
+
+export default function SetupBoardPreview({ resources, values, ports, blockedEdges, onPortClick }) {
   // Build hex data
   const hexData = [];
   let tileIdx = 0;
@@ -75,11 +77,16 @@ export default function SetupBoardPreview({ resources, values, ports, onPortClic
         );
       })}
 
-      {/* Port indicators */}
-      {PORT_EDGES.map(([posA, posB], i) => {
+      {/* Port indicators - all 30 coastal edges */}
+      {ALL_COASTAL_EDGES.map(([posA, posB], i) => {
         const pA = getSettlementPixel(posA);
         const pB = getSettlementPixel(posB);
         if (!pA || !pB) return null;
+
+        const key = edgeKey(posA, posB);
+        const portType = ports[key] || 'none';
+        const isBlocked = blockedEdges && blockedEdges.has(key) && portType === 'none';
+        const hasPort = portType !== 'none';
 
         // Midpoint of the two coastal vertices
         const midX = (pA.x + pB.x) / 2;
@@ -98,21 +105,25 @@ export default function SetupBoardPreview({ resources, values, ports, onPortClic
         const perpLen = Math.sqrt(perpX * perpX + perpY * perpY) || 1;
         const nx = sign * perpX / perpLen;
         const ny = sign * perpY / perpLen;
-        const dist = 55;
+        const dist = hasPort ? 55 : 28;
         const badgeX = midX + nx * dist;
         const badgeY = midY + ny * dist;
 
-        const portType = ports[i] || 'none';
         const colors = PORT_COLORS[portType];
         const label = PORT_EMOJI_LABELS[portType];
         const sublabel = PORT_SUBLABELS[portType];
         const isNone = portType === 'none';
         const lineColor = isNone ? '#ccc' : colors.stroke;
 
+        // Blocked edges: show nothing
+        if (isBlocked) {
+          return null;
+        }
+
         return (
           <g
             key={`port-${i}`}
-            onClick={() => onPortClick(i)}
+            onClick={() => onPortClick(key)}
             style={{ cursor: 'pointer' }}
           >
             {/* Lines from each vertex to the badge */}

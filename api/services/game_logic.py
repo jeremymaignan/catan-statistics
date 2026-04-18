@@ -351,18 +351,35 @@ def get_board_state(game):
     )
 
     # Build port data
-    port_types_list = game.get("ports", DEFAULT_PORTS)
+    raw_ports = game.get("ports", [])
     ports = []
-    for i, (pos_a, pos_b) in enumerate(PORT_EDGES):
-        port_code = port_types_list[i] if i < len(port_types_list) else "none"
-        port_info = PORT_TYPES.get(port_code, PORT_TYPES["none"])
-        ports.append({
-            "index": i,
-            "type": port_code,
-            "text": port_info["text"],
-            "color": port_info.get("color"),
-            "positions": [pos_a, pos_b],
-        })
+
+    # Support both old format (flat list of type codes) and new format (list of dicts)
+    if raw_ports and isinstance(raw_ports[0], str):
+        # Legacy format: flat list of port type codes mapped to PORT_EDGES
+        for i, (pos_a, pos_b) in enumerate(PORT_EDGES):
+            port_code = raw_ports[i] if i < len(raw_ports) else "none"
+            port_info = PORT_TYPES.get(port_code, PORT_TYPES["none"])
+            ports.append({
+                "index": i,
+                "type": port_code,
+                "text": port_info["text"],
+                "color": port_info.get("color"),
+                "positions": [pos_a, pos_b],
+            })
+    else:
+        # New format: list of {type, positions} objects
+        for i, port_data in enumerate(raw_ports):
+            port_code = port_data.get("type", "none")
+            port_positions = port_data.get("positions", [])
+            port_info = PORT_TYPES.get(port_code, PORT_TYPES["none"])
+            ports.append({
+                "index": i,
+                "type": port_code,
+                "text": port_info["text"],
+                "color": port_info.get("color"),
+                "positions": port_positions,
+            })
 
     return {
         "tiles": tiles,

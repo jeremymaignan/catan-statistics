@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import SetupBoardPreview from './SetupBoardPreview';
 import { ALL_RESOURCES } from '../shared/constants';
+import { ALL_COASTAL_EDGES } from '../shared/boardGeometry';
 import '../responsive.css';
 
 const RESOURCE_OPTIONS = ALL_RESOURCES;
@@ -14,15 +15,56 @@ const EXPECTED_NUMBERS = { '0': 1, '2': 1, '3': 2, '4': 2, '5': 2, '6': 2, '8': 
 // Default board for quick setup (standard Catan layout)
 const DEFAULT_RESOURCES = ['o', 'wo', 's', 'w', 'b', 's', 'b', 'wo', 'w', 'r', 'wo', 'o', 's', 'w', 'o', 'b', 'wo', 's', 'w'];
 const DEFAULT_VALUES = ['10', '2', '9', '12', '6', '4', '10', '9', '11', '0', '3', '8', '8', '3', '4', '5', '5', '6', '11'];
-const DEFAULT_PORTS = ['3:1', 'wo_port', '3:1', 'o_port', '3:1', 's_port', '3:1', 'b_port', 'w_port'];
+
+// Helper: edge key from a pair of positions
+const edgeKey = (a, b) => `${a}-${b}`;
+
+// Expected port distribution (standard Catan)
+const EXPECTED_PORTS = {
+  'wo_port': 1,
+  'o_port': 1,
+  'w_port': 1,
+  'b_port': 1,
+  's_port': 1,
+  '3:1': 4,
+};
+
+const PORT_VALIDATION_ORDER = [
+  { code: 'wo_port', label: 'Wood', emoji: '\u{1F332}', color: '#1b5e20' },
+  { code: 'b_port', label: 'Brick', emoji: '\u{1F9F1}', color: '#a0522d' },
+  { code: 'o_port', label: 'Ore', emoji: '\u{26F0}\uFE0F', color: '#757575' },
+  { code: 's_port', label: 'Sheep', emoji: '\u{1F411}', color: '#aed581' },
+  { code: 'w_port', label: 'Wheat', emoji: '\u{1F33E}', color: '#fdd835' },
+  { code: '3:1', label: '3:1', emoji: '\u{1F6A2}', color: '#6d4c41' },
+];
 
 export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
   const [mode, setMode] = useState('manual');
   const [step, setStep] = useState(1);
   const [resources, setResources] = useState(DEFAULT_RESOURCES);
   const [values, setValues] = useState(DEFAULT_VALUES);
-  const [ports, setPorts] = useState(DEFAULT_PORTS);
+  const [ports, setPorts] = useState({}); // { "a-b": "3:1", ... }
   const [file, setFile] = useState(null);
+
+  // Compute which edges are blocked (adjacent to a placed port in the cycle)
+  const blockedEdges = useMemo(() => {
+    const blocked = new Set();
+    const n = ALL_COASTAL_EDGES.length; // 30
+    for (let i = 0; i < n; i++) {
+      const [a, b] = ALL_COASTAL_EDGES[i];
+      const key = edgeKey(a, b);
+      if (ports[key]) {
+        // Block the previous and next edges in the cycle
+        const prev = (i - 1 + n) % n;
+        const next = (i + 1) % n;
+        const [pa, pb] = ALL_COASTAL_EDGES[prev];
+        const [na, nb] = ALL_COASTAL_EDGES[next];
+        blocked.add(edgeKey(pa, pb));
+        blocked.add(edgeKey(na, nb));
+      }
+    }
+    return blocked;
+  }, [ports]);
 
   const handleResourceChange = (index, value) => {
     const updated = [...resources];
@@ -41,12 +83,20 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
     setValues(updated);
   };
 
-  const handlePortCycle = (index) => {
+  const handlePortCycle = (key) => {
     const portOrder = ['none', '3:1', 'wo_port', 'b_port', 'o_port', 's_port', 'w_port'];
-    const updated = [...ports];
-    const currentIdx = portOrder.indexOf(updated[index]);
-    updated[index] = portOrder[(currentIdx + 1) % portOrder.length];
-    setPorts(updated);
+    const current = ports[key] || 'none';
+    const currentIdx = portOrder.indexOf(current);
+    const next = portOrder[(currentIdx + 1) % portOrder.length];
+    setPorts(prev => {
+      const updated = { ...prev };
+      if (next === 'none') {
+        delete updated[key];
+      } else {
+        updated[key] = next;
+      }
+      return updated;
+    });
   };
 
   const handleSubmit = (e) => {
@@ -54,7 +104,12 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
     // Only submit on step 2 (manual) or image mode
     if (mode === 'manual' && step !== 2) return;
     if (mode === 'manual') {
-      onCreateGame(resources, values, ports);
+      // Convert ports object to list of {type, positions} for backend
+      const portsList = Object.entries(ports).map(([key, type]) => {
+        const [posA, posB] = key.split('-');
+        return { type, positions: [posA, posB] };
+      });
+      onCreateGame(resources, values, portsList);
     } else if (file) {
       onUploadImage(file);
     }
@@ -193,17 +248,61 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
     </div>
   );
 
-  // Step 2: board preview with clickable ports
-  const renderStep2 = () => (
-    <div style={styles.step2Container}>
-      <SetupBoardPreview
-        resources={resources}
-        values={values}
-        ports={ports}
-        onPortClick={handlePortCycle}
-      />
-    </div>
-  );
+  // Step 2: board preview with clickable ports + validation sidebar
+  const renderStep2 = () => {
+    // Count current ports by type
+    const portCounts = {};
+    Object.values(ports).forEach(type => {
+      portCounts[type] = (portCounts[type] || 0) + 1;
+    });
+    const portsValid = PORT_VALIDATION_ORDER.every(
+      p => (portCounts[p.code] || 0) === EXPECTED_PORTS[p.code]
+    );
+
+    return (
+      <div className="setup-layout">
+        <div className="board-setup" style={{ flex: 1, minWidth: 0 }}>
+          <SetupBoardPreview
+            resources={resources}
+            values={values}
+            ports={ports}
+            blockedEdges={blockedEdges}
+            onPortClick={handlePortCycle}
+          />
+        </div>
+        <div className="validation-sidebar">
+          <div style={{ ...styles.validationBlock, borderTopColor: portsValid ? '#43a047' : '#ef5350' }}>
+            <h4 style={styles.validationTitle}>
+              Ports
+              <span style={{ ...styles.checkBadge, background: portsValid ? '#e8f5e9' : '#ffebee', color: portsValid ? '#2e7d32' : '#c62828' }}>
+                {portsValid ? '\u2713' : '\u2717'}
+              </span>
+            </h4>
+            <div style={styles.validationList}>
+              {PORT_VALIDATION_ORDER.map(p => {
+                const current = portCounts[p.code] || 0;
+                const expected = EXPECTED_PORTS[p.code];
+                const isOk = current === expected;
+                return (
+                  <div key={p.code} style={{ ...styles.validationRow, backgroundColor: isOk ? 'transparent' : '#fef2f2' }}>
+                    <span style={{ ...styles.colorDot, backgroundColor: p.color }} />
+                    <span style={{ flex: 1, fontWeight: 500, color: 'var(--text-primary)' }}>{p.emoji} {p.label}</span>
+                    <span style={{
+                      fontWeight: 700,
+                      fontSize: 13,
+                      color: isOk ? '#43a047' : '#c62828',
+                    }}>
+                      {current}<span style={{ color: 'var(--text-hint)', fontWeight: 400 }}>/{expected}</span>
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div style={styles.container}>

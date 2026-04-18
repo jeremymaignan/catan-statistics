@@ -81,6 +81,18 @@ export const PORT_EDGES = [
 ];
 
 /**
+ * All 30 coastal (perimeter) edges in clockwise cycle order.
+ * Each edge is a pair of adjacent settlement positions on the board perimeter.
+ */
+export const ALL_COASTAL_EDGES = [
+  ['a', 'b'], ['b', 'c'], ['c', 'd'], ['d', 'e'], ['e', 'f'], ['f', 'g'],
+  ['g', 'o'], ['o', 'p'], ['p', 'z'], ['z', '1'], ['1', 'K'], ['K', 'J'],
+  ['J', 'T'], ['T', 'S'], ['S', '2'], ['2', 'Z'], ['Z', 'Y'], ['Y', 'X'],
+  ['X', 'W'], ['W', 'V'], ['V', 'U'], ['U', 'M'], ['M', 'L'], ['L', 'B'],
+  ['B', 'A'], ['A', 'q'], ['q', 'r'], ['r', 'h'], ['h', 'i'], ['i', 'a'],
+];
+
+/**
  * Colors considered dark enough to need white text overlay.
  */
 export const DARK_TILES = new Set([]);

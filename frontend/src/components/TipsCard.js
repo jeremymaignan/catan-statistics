@@ -245,7 +245,7 @@ function cityUpgradeTips(ctx) {
 
   return [{
     type: 'info',
-    text: `Best city upgrade: position ${best.pos} (+${best.extraRate}/36) producing ${resText}.`,
+    text: `Best city upgrade: producing ${resText} (+${best.extraRate}/36).`,
   }];
 }
 
