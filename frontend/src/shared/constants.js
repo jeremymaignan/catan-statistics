@@ -85,11 +85,11 @@ export const RANK_COLORS = {
   poor:   { fill: '#e53935', stroke: '#c62828', text: '#fff' },
 };
 
-/** Validation status colors (setup form, settlements) */
+/** Validation status colors (setup form, settlements) — uses CSS variables for dark mode */
 export const VALIDATION_COLORS = {
-  valid:   { accent: '#43a047', bg: '#e8f5e9', text: '#2e7d32' },
-  invalid: { accent: '#ef5350', bg: '#ffebee', text: '#c62828' },
-  over:    '#c62828',
+  valid:   { accent: 'var(--validation-ok-accent)',  bg: 'var(--validation-ok-bg)',  text: 'var(--validation-ok-text)' },
+  invalid: { accent: 'var(--validation-err-accent)', bg: 'var(--validation-err-bg)', text: 'var(--validation-err-text)' },
+  over:    'var(--validation-err-text)',
 };
 
 /**

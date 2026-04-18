@@ -193,7 +193,7 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
                     const expected = EXPECTED_RESOURCES[r.code];
                     const isOk = current === expected;
                     return (
-                      <div key={r.code} style={{ ...styles.validationRow, backgroundColor: isOk ? 'transparent' : '#fef2f2' }}>
+                      <div key={r.code} style={{ ...styles.validationRow, backgroundColor: isOk ? 'transparent' : 'var(--validation-row-err-bg)' }}>
                         <span style={{ ...styles.colorDot, backgroundColor: r.color }} />
                         <span style={{ flex: 1, fontWeight: 500, color: 'var(--text-primary)' }}>{r.emoji} {r.label}</span>
                         <span style={{
@@ -221,7 +221,7 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
                     const isOk = current === expected;
                     const isHot = num === '6' || num === '8';
                     return (
-                      <div key={num} style={{ ...styles.validationRow, backgroundColor: isOk ? 'transparent' : '#fef2f2' }}>
+                      <div key={num} style={{ ...styles.validationRow, backgroundColor: isOk ? 'transparent' : 'var(--validation-row-err-bg)' }}>
                         <span style={{
                           ...styles.numBadge,
                           backgroundColor: isHot ? DICE_HOT_COLOR : 'var(--text-secondary)',
@@ -285,7 +285,7 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
                 const expected = EXPECTED_PORTS[p.code];
                 const isOk = current === expected;
                 return (
-                  <div key={p.code} style={{ ...styles.validationRow, backgroundColor: isOk ? 'transparent' : '#fef2f2' }}>
+                  <div key={p.code} style={{ ...styles.validationRow, backgroundColor: isOk ? 'transparent' : 'var(--validation-row-err-bg)' }}>
                     <span style={{ ...styles.colorDot, backgroundColor: p.color }} />
                     <span style={{ flex: 1, fontWeight: 500, color: 'var(--text-primary)' }}>{p.emoji} {p.label}</span>
                     <span style={{
