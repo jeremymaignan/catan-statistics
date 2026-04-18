@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import HexBoard from './components/HexBoard';
 import SetupForm from './components/SetupForm';
 import StatsPanel from './components/StatsPanel';
@@ -9,7 +9,7 @@ import TipsCard from './components/TipsCard';
 import BoardLegend from './components/BoardLegend';
 import CollapsibleCard from './components/CollapsibleCard';
 import { ThemeProvider, useTheme } from './shared/ThemeContext';
-import { createGame, createGameFromImage, getGame, cycleSettlement, moveRobber, cloneGame } from './api';
+import { createGame, createGameFromImage, getGame, cycleSettlement, moveRobber, cloneGame, onApiError } from './api';
 import './responsive.css';
 
 function ThemeToggle() {
@@ -30,10 +30,24 @@ function AppContent() {
   });
   const [boardState, setBoardState] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [notFound, setNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
   const [rotation, setRotation] = useState(0);
+  const [toasts, setToasts] = useState([]);
+  const toastIdRef = useRef(0);
+
+  const addToast = useCallback((message) => {
+    const id = ++toastIdRef.current;
+    setToasts(prev => [...prev, { id, message }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 5000);
+  }, []);
+
+  // Subscribe to global API errors
+  useEffect(() => {
+    onApiError((msg) => addToast(msg));
+  }, [addToast]);
 
   const updateUrl = (id) => {
     const url = new URL(window.location);
@@ -77,56 +91,40 @@ function AppContent() {
 
   const handleCreateGame = async (resources, values, ports) => {
     setLoading(true);
-    setError(null);
     try {
       const data = await createGame(resources, values, ports);
-      if (data.error) throw new Error(data.error);
       saveGameId(data.id);
       const state = await getGame(data.id);
       setBoardState(state);
-    } catch (err) {
-      setError(err.message);
-    }
+    } catch { /* toast fires automatically via onApiError */ }
     setLoading(false);
   };
 
   const handleUploadImage = async (file) => {
     setLoading(true);
-    setError(null);
     try {
       const data = await createGameFromImage(file);
-      if (data.error) throw new Error(data.error);
       saveGameId(data.id);
       const state = await getGame(data.id);
       setBoardState(state);
-    } catch (err) {
-      setError(err.message);
-    }
+    } catch { /* toast fires automatically via onApiError */ }
     setLoading(false);
   };
 
   const handlePositionClick = async (position) => {
     if (!gameId) return;
-    setError(null);
     try {
       const data = await cycleSettlement(gameId, position);
-      if (data.error) throw new Error(data.error);
       setBoardState(data);
-    } catch (err) {
-      setError(err.message);
-    }
+    } catch { /* toast fires automatically via onApiError */ }
   };
 
   const handleTileClick = async (tileIndex) => {
     if (!gameId) return;
-    setError(null);
     try {
       const data = await moveRobber(gameId, tileIndex);
-      if (data.error) throw new Error(data.error);
       setBoardState(data);
-    } catch (err) {
-      setError(err.message);
-    }
+    } catch { /* toast fires automatically via onApiError */ }
   };
 
   const handleNewGame = () => {
@@ -134,16 +132,13 @@ function AppContent() {
     updateUrl(null);
     setGameId(null);
     setBoardState(null);
-    setError(null);
     setNotFound(false);
   };
 
   const handleShare = async () => {
     if (!gameId || copied) return;
-    setError(null);
     try {
       const data = await cloneGame(gameId);
-      if (data.error) throw new Error(data.error);
       const shareUrl = new URL(window.location);
       shareUrl.searchParams.set('game', data.id);
       const url = shareUrl.toString();
@@ -159,9 +154,7 @@ function AppContent() {
       }
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      setError(err.message);
-    }
+    } catch { /* toast fires automatically via onApiError */ }
   };
 
   return (
@@ -172,9 +165,15 @@ function AppContent() {
           <div className="header-actions" style={styles.headerActions}>
             {gameId && (
               <>
-                <button onClick={handleShare} style={styles.shareBtn}>
-                  {copied ? 'Copied!' : 'Share'}
-                </button>
+                <div className="share-wrap" style={styles.shareWrap}>
+                  <button onClick={handleShare} style={styles.shareBtn}>
+                    {copied ? 'Copied!' : 'Share'}
+                    <span style={styles.shareInfo}>?</span>
+                  </button>
+                  <div className="share-tooltip" style={styles.shareTooltip}>
+                    Share the board layout with other players. Creates a fresh copy with the same tiles and ports. Your settlements won't be shared.
+                  </div>
+                </div>
                 <button onClick={handleNewGame} style={styles.newGameBtn}>
                   New Game
                 </button>
@@ -186,12 +185,6 @@ function AppContent() {
       </header>
 
       <main style={styles.main}>
-        {error && (
-          <div style={styles.error}>
-            {error}
-          </div>
-        )}
-
         {notFound ? (
           <div style={styles.notFoundWrap}>
             <div style={styles.notFoundCard}>
@@ -292,6 +285,24 @@ function AppContent() {
           </div>
         )}
       </main>
+
+      {/* Toast notifications */}
+      {toasts.length > 0 && (
+        <div style={styles.toastContainer}>
+          {toasts.map(t => (
+            <div key={t.id} className="toast-slide-in" style={styles.toast}>
+              <span style={styles.toastIcon}>&#x26A0;&#xFE0F;</span>
+              <span style={styles.toastMsg}>{t.message}</span>
+              <button
+                onClick={() => setToasts(prev => prev.filter(x => x.id !== t.id))}
+                style={styles.toastClose}
+              >
+                &times;
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -339,7 +350,13 @@ const styles = {
     alignItems: 'center',
     gap: 8,
   },
+  shareWrap: {
+    position: 'relative',
+  },
   shareBtn: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 6,
     padding: '7px 18px',
     background: 'rgba(255,255,255,0.25)',
     color: 'white',
@@ -352,6 +369,38 @@ const styles = {
     transition: 'all 0.2s',
     backdropFilter: 'blur(4px)',
     minWidth: 72,
+  },
+  shareInfo: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 15,
+    height: 15,
+    borderRadius: '50%',
+    border: '1.5px solid rgba(255,255,255,0.6)',
+    fontSize: 9,
+    fontWeight: 700,
+    lineHeight: 1,
+    opacity: 0.7,
+  },
+  shareTooltip: {
+    display: 'none',
+    position: 'absolute',
+    top: '100%',
+    right: 0,
+    marginTop: 6,
+    padding: '10px 14px',
+    background: 'var(--card-bg, #fff)',
+    color: 'var(--text-body, #333)',
+    borderRadius: 10,
+    fontSize: 12,
+    fontWeight: 500,
+    lineHeight: 1.5,
+    width: 240,
+    boxShadow: '0 4px 16px rgba(0,0,0,0.18)',
+    border: '1px solid var(--border-main, #ddd)',
+    zIndex: 200,
+    pointerEvents: 'none',
   },
   newGameBtn: {
     padding: '7px 18px',
@@ -382,16 +431,48 @@ const styles = {
     margin: '0 auto',
     overflowX: 'hidden',
   },
-  error: {
+  toastContainer: {
+    position: 'fixed',
+    bottom: 20,
+    right: 20,
+    zIndex: 9999,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 8,
+    maxWidth: 380,
+  },
+  toast: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    padding: '12px 16px',
     background: 'var(--error-bg)',
     color: 'var(--error-text)',
-    padding: '12px 20px',
-    marginBottom: 20,
-    borderRadius: 10,
     border: '1px solid var(--error-border)',
-    fontSize: 14,
+    borderRadius: 12,
+    boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+    fontSize: 13,
     fontWeight: 500,
-    textAlign: 'center',
+    fontFamily: "'Inter', sans-serif",
+    lineHeight: 1.4,
+  },
+  toastIcon: {
+    fontSize: 16,
+    flexShrink: 0,
+  },
+  toastMsg: {
+    flex: 1,
+  },
+  toastClose: {
+    background: 'none',
+    border: 'none',
+    color: 'var(--error-text)',
+    fontSize: 18,
+    cursor: 'pointer',
+    padding: '0 2px',
+    opacity: 0.6,
+    flexShrink: 0,
+    lineHeight: 1,
   },
   loadingWrap: {
     display: 'flex',
