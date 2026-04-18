@@ -1,5 +1,10 @@
+import logging
+from functools import wraps
+
 from bson import ObjectId
+from bson.errors import InvalidId
 from flask import Blueprint, current_app, jsonify, request
+from pymongo.errors import PyMongoError
 
 from api.config import DICE_PROBABILITY, PORT_TYPES, SETTLEMENTS_POSITIONS
 from api.models.game import new_game
@@ -13,12 +18,43 @@ from api.services.game_logic import (
 from api.services.image_processing import crop_image
 from api.services.openai_client import OpenAIClient
 
+logger = logging.getLogger(__name__)
+
 games_bp = Blueprint("games", __name__)
 
 
 def get_db():
     return current_app.config["db"]
 
+
+# ── Decorator to load a game by ID ──────────────────────────────────
+
+def require_game(fn):
+    """Inject the `game` document as the first arg after `game_id`.
+
+    Handles invalid ObjectId, DB errors, and missing games in one place.
+    """
+    @wraps(fn)
+    def wrapper(game_id, *args, **kwargs):
+        try:
+            oid = ObjectId(game_id)
+        except (InvalidId, Exception):
+            return jsonify({"error": "Invalid game ID"}), 400
+
+        try:
+            game = get_db().games.find_one({"_id": oid})
+        except PyMongoError as exc:
+            logger.error("DB error loading game %s: %s", game_id, exc)
+            return jsonify({"error": "Database error"}), 500
+
+        if not game:
+            return jsonify({"error": "Game not found"}), 404
+
+        return fn(game_id, game, *args, **kwargs)
+    return wrapper
+
+
+# ── Routes ───────────────────────────────────────────────────────────
 
 @games_bp.route("/api/games", methods=["POST"])
 def create_game():
@@ -59,7 +95,12 @@ def create_game():
                 return jsonify({"error": "Each port must have exactly 2 positions"}), 400
 
     game = new_game(resources, [str(v) for v in values], ports=ports)
-    result = get_db().games.insert_one(game)
+
+    try:
+        result = get_db().games.insert_one(game)
+    except PyMongoError as exc:
+        logger.error("DB error creating game: %s", exc)
+        return jsonify({"error": "Failed to save game"}), 500
 
     return jsonify({
         "id": str(result.inserted_id),
@@ -83,10 +124,16 @@ def create_game_from_image():
         client = OpenAIClient()
         resources, values = client.parse_board(tile_paths)
     except Exception as e:
+        logger.error("Image parsing failed: %s", e)
         return jsonify({"error": f"Failed to parse image: {str(e)}"}), 500
 
     game = new_game(resources, values)
-    result = get_db().games.insert_one(game)
+
+    try:
+        result = get_db().games.insert_one(game)
+    except PyMongoError as exc:
+        logger.error("DB error creating game from image: %s", exc)
+        return jsonify({"error": "Failed to save game"}), 500
 
     return jsonify({
         "id": str(result.inserted_id),
@@ -97,36 +144,21 @@ def create_game_from_image():
 
 
 @games_bp.route("/api/games/<game_id>", methods=["GET"])
-def get_game(game_id):
+@require_game
+def get_game(game_id, game):
     """Get the full game state including board and statistics."""
-    try:
-        game = get_db().games.find_one({"_id": ObjectId(game_id)})
-    except Exception:
-        return jsonify({"error": "Invalid game ID"}), 400
-
-    if not game:
-        return jsonify({"error": "Game not found"}), 404
-
     board_state = get_board_state(game)
     board_state["id"] = str(game["_id"])
-
     return jsonify(board_state), 200
 
 
 @games_bp.route("/api/games/<game_id>/settlements/<position>", methods=["PATCH"])
-def cycle_settlement(game_id, position):
+@require_game
+def cycle_settlement(game_id, game, position):
     """
     Cycle a settlement position through states:
       available -> colony -> city -> opponent -> removed (available)
     """
-    try:
-        game = get_db().games.find_one({"_id": ObjectId(game_id)})
-    except Exception:
-        return jsonify({"error": "Invalid game ID"}), 400
-
-    if not game:
-        return jsonify({"error": "Game not found"}), 404
-
     if position not in SETTLEMENTS_POSITIONS:
         return jsonify({"error": f"Invalid position: {position}"}), 400
 
@@ -150,10 +182,14 @@ def cycle_settlement(game_id, position):
         # Opponent -> Remove
         settlements, blocked = remove_settlement(position, settlements, blocked)
 
-    get_db().games.update_one(
-        {"_id": ObjectId(game_id)},
-        {"$set": {"settlements": settlements, "blocked_positions": blocked}},
-    )
+    try:
+        get_db().games.update_one(
+            {"_id": ObjectId(game_id)},
+            {"$set": {"settlements": settlements, "blocked_positions": blocked}},
+        )
+    except PyMongoError as exc:
+        logger.error("DB error updating settlement: %s", exc)
+        return jsonify({"error": "Failed to update game"}), 500
 
     game["settlements"] = settlements
     game["blocked_positions"] = blocked
@@ -164,35 +200,29 @@ def cycle_settlement(game_id, position):
 
 
 @games_bp.route("/api/games/<game_id>/robber/<int:tile_index>", methods=["PATCH"])
-def move_robber(game_id, tile_index):
+@require_game
+def move_robber(game_id, game, tile_index):
     """
     Place or remove the robber on a tile.
     If the robber is already on this tile, remove it.
     tile_index is 1-based (1-19).
     """
-    try:
-        game = get_db().games.find_one({"_id": ObjectId(game_id)})
-    except Exception:
-        return jsonify({"error": "Invalid game ID"}), 400
-
-    if not game:
-        return jsonify({"error": "Game not found"}), 404
-
     if tile_index < 1 or tile_index > 19:
         return jsonify({"error": "Tile index must be between 1 and 19"}), 400
 
     current_robber = game.get("robber_tile")
 
     # Toggle: if robber is already on this tile, remove it; otherwise place it
-    if current_robber == tile_index:
-        new_robber = None
-    else:
-        new_robber = tile_index
+    new_robber = None if current_robber == tile_index else tile_index
 
-    get_db().games.update_one(
-        {"_id": ObjectId(game_id)},
-        {"$set": {"robber_tile": new_robber}},
-    )
+    try:
+        get_db().games.update_one(
+            {"_id": ObjectId(game_id)},
+            {"$set": {"robber_tile": new_robber}},
+        )
+    except PyMongoError as exc:
+        logger.error("DB error moving robber: %s", exc)
+        return jsonify({"error": "Failed to update game"}), 500
 
     game["robber_tile"] = new_robber
     board_state = get_board_state(game)
@@ -202,16 +232,9 @@ def move_robber(game_id, tile_index):
 
 
 @games_bp.route("/api/games/<game_id>/clone", methods=["POST"])
-def clone_game(game_id):
+@require_game
+def clone_game(game_id, game):
     """Clone a game's board (resources + values) into a new game without settlements."""
-    try:
-        game = get_db().games.find_one({"_id": ObjectId(game_id)})
-    except Exception:
-        return jsonify({"error": "Invalid game ID"}), 400
-
-    if not game:
-        return jsonify({"error": "Game not found"}), 404
-
     raw_ports = game.get("ports", [])
     # Deep copy ports (supports both old string format and new dict format)
     if raw_ports and isinstance(raw_ports[0], dict):
@@ -219,7 +242,12 @@ def clone_game(game_id):
     else:
         cloned_ports = list(raw_ports) if raw_ports else None
     clone = new_game(list(game["resources"]), list(game["values"]), ports=cloned_ports or None)
-    result = get_db().games.insert_one(clone)
+
+    try:
+        result = get_db().games.insert_one(clone)
+    except PyMongoError as exc:
+        logger.error("DB error cloning game: %s", exc)
+        return jsonify({"error": "Failed to clone game"}), 500
 
     return jsonify({
         "id": str(result.inserted_id),
