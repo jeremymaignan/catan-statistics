@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { RANK_COLORS } from '../shared/constants';
 
 const ITEMS = [
   {
@@ -6,7 +7,7 @@ const ITEMS = [
     desc: 'Click to place colony',
     render: () => (
       <svg width="24" height="24" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="10" fill="#43a047" stroke="#2e7d32" strokeWidth="1.5" />
+        <circle cx="12" cy="12" r="10" fill={RANK_COLORS.good.fill} stroke={RANK_COLORS.good.stroke} strokeWidth="1.5" />
         <text x="12" y="12" textAnchor="middle" dominantBaseline="central" fontSize="9" fontWeight="700" fill="#fff">1</text>
       </svg>
     ),
@@ -105,11 +106,11 @@ export default function BoardLegend() {
             ))}
           </div>
           <div style={styles.rankHint}>
-            <span style={styles.rankDot('#43a047')} />
+            <span style={styles.rankDot(RANK_COLORS.good.fill)} />
             <span style={styles.rankLabel}>Best</span>
-            <span style={styles.rankDot('#f9a825')} />
+            <span style={styles.rankDot(RANK_COLORS.medium.fill)} />
             <span style={styles.rankLabel}>Medium</span>
-            <span style={styles.rankDot('#e53935')} />
+            <span style={styles.rankDot(RANK_COLORS.poor.fill)} />
             <span style={styles.rankLabel}>Worst</span>
             <span style={styles.rankSuffix}> &mdash; position rank by production value</span>
           </div>

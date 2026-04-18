@@ -67,6 +67,43 @@ export const PORT_TO_RESOURCE = {
   'wo_port': 'wo', 'b_port': 'b', 'o_port': 'o', 's_port': 's', 'w_port': 'w',
 };
 
+// ── UI colors ───────────────────────────────────────────────────────
+
+/** Hot dice value (6 & 8) accent color */
+export const DICE_HOT_COLOR = '#c62828';
+
+/** Seven / robber accent color */
+export const DICE_SEVEN_COLOR = '#e65100';
+
+/** Default dice number color */
+export const DICE_DEFAULT_COLOR = '#8d6e63';
+
+/** Rank color tiers for settlement position scores */
+export const RANK_COLORS = {
+  good:   { fill: '#43a047', stroke: '#2e7d32', text: '#fff' },
+  medium: { fill: '#f9a825', stroke: '#f57f17', text: '#fff' },
+  poor:   { fill: '#e53935', stroke: '#c62828', text: '#fff' },
+};
+
+/** Validation status colors (setup form, settlements) */
+export const VALIDATION_COLORS = {
+  valid:   { accent: '#43a047', bg: '#e8f5e9', text: '#2e7d32' },
+  invalid: { accent: '#ef5350', bg: '#ffebee', text: '#c62828' },
+  over:    '#c62828',
+};
+
+/**
+ * Return rank color set based on rank percentile.
+ * rank=1 is best, totalRanks is worst.
+ */
+export function getRankColor(rank, totalRanks) {
+  if (totalRanks <= 1) return { ...RANK_COLORS.good, text: '#2e7d32' };
+  const pct = (rank - 1) / (totalRanks - 1); // 0 = best, 1 = worst
+  if (pct < 0.33) return RANK_COLORS.good;
+  if (pct < 0.66) return RANK_COLORS.medium;
+  return RANK_COLORS.poor;
+}
+
 // ── Trading ─────────────────────────────────────────────────────────
 
 /**

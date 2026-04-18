@@ -1,5 +1,6 @@
 import React from 'react';
 import { RESOURCES, RESOURCE_BY_CODE, computeTradingRates } from '../shared/constants';
+import { styles } from '../styles/TipsCard.styles';
 
 // ── Tip severity levels ─────────────────────────────────────────────
 const TIP_STYLES = {
@@ -309,30 +310,3 @@ export default function TipsCard({ statistics, ports, settlements, boardScarcity
     </div>
   );
 }
-
-const styles = {
-  list: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 8,
-  },
-  tip: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: 10,
-    padding: '10px 12px',
-    borderRadius: 10,
-    border: '1px solid',
-  },
-  tipIcon: {
-    fontSize: 16,
-    flexShrink: 0,
-    lineHeight: '20px',
-  },
-  tipText: {
-    fontSize: 13,
-    fontWeight: 500,
-    lineHeight: '20px',
-    fontFamily: "'Inter', sans-serif",
-  },
-};

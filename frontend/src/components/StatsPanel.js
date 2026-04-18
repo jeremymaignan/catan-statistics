@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { RESOURCE_EMOJIS } from '../shared/constants';
+import { RESOURCE_EMOJIS, DICE_HOT_COLOR, DICE_SEVEN_COLOR, DICE_DEFAULT_COLOR } from '../shared/constants';
 import ResourceRadar from './ResourceRadar';
 import { styles } from '../styles/StatsPanel.styles';
 
@@ -56,7 +56,7 @@ export default function StatsPanel({ statistics, settlements }) {
                         <td style={styles.td}>
                           <span style={{
                             fontWeight: isHot || isSeven ? 800 : 600,
-                            color: isHot ? '#c62828' : isSeven ? '#e65100' : 'var(--text-primary)',
+                            color: isHot ? DICE_HOT_COLOR : isSeven ? DICE_SEVEN_COLOR : 'var(--text-primary)',
                             fontSize: 14,
                           }}>{d.roll}</span>
                         </td>
@@ -71,7 +71,7 @@ export default function StatsPanel({ statistics, settlements }) {
                             <div style={{
                               ...styles.dotsFill,
                               width: `${(d.dots / 6) * 100}%`,
-                              backgroundColor: isHot ? '#c62828' : isSeven ? '#e65100' : '#8d6e63',
+                              backgroundColor: isHot ? DICE_HOT_COLOR : isSeven ? DICE_SEVEN_COLOR : DICE_DEFAULT_COLOR,
                             }} />
                           </div>
                         </td>
@@ -108,7 +108,7 @@ export default function StatsPanel({ statistics, settlements }) {
                       <td style={styles.td}>
                         <span style={{
                           ...styles.diceValue,
-                          color: (value === '6' || value === '8') ? '#c62828' : 'var(--text-primary)',
+                          color: (value === '6' || value === '8') ? DICE_HOT_COLOR : 'var(--text-primary)',
                           fontWeight: (value === '6' || value === '8') ? 800 : 600,
                         }}>{value}</span>
                       </td>

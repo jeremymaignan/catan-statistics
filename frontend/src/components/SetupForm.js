@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import SetupBoardPreview from './SetupBoardPreview';
-import { ALL_RESOURCES } from '../shared/constants';
+import { ALL_RESOURCES, DICE_HOT_COLOR, VALIDATION_COLORS } from '../shared/constants';
 import { ALL_COASTAL_EDGES } from '../shared/boardGeometry';
 import { styles } from '../styles/SetupForm.styles';
 import '../responsive.css';
@@ -152,7 +152,7 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
                         ...styles.select,
                         ...(resources[idx] === 'r' ? { opacity: 0.4 } : {}),
                         fontWeight: (values[idx] === '6' || values[idx] === '8') ? 700 : 500,
-                        color: (values[idx] === '6' || values[idx] === '8') ? '#c62828' : 'var(--text-primary)',
+                        color: (values[idx] === '6' || values[idx] === '8') ? DICE_HOT_COLOR : 'var(--text-primary)',
                       }}
                       disabled={resources[idx] === 'r'}
                     >
@@ -180,10 +180,10 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
         return (
           <div className="validation-sidebar">
             <div className="validation-row-2col" style={styles.validationRow2Col}>
-              <div style={{ ...styles.validationBlock, borderTopColor: resValid ? '#43a047' : '#ef5350', flex: 1 }}>
+              <div style={{ ...styles.validationBlock, borderTopColor: resValid ? VALIDATION_COLORS.valid.accent : VALIDATION_COLORS.invalid.accent, flex: 1 }}>
                 <h4 style={styles.validationTitle}>
                   Resources
-                  <span style={{ ...styles.checkBadge, background: resValid ? '#e8f5e9' : '#ffebee', color: resValid ? '#2e7d32' : '#c62828' }}>
+                  <span style={{ ...styles.checkBadge, background: resValid ? VALIDATION_COLORS.valid.bg : VALIDATION_COLORS.invalid.bg, color: resValid ? VALIDATION_COLORS.valid.text : VALIDATION_COLORS.invalid.text }}>
                     {resValid ? '\u2713' : '\u2717'}
                   </span>
                 </h4>
@@ -199,7 +199,7 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
                         <span style={{
                           fontWeight: 700,
                           fontSize: 13,
-                          color: isOk ? '#43a047' : '#c62828',
+                          color: isOk ? VALIDATION_COLORS.valid.accent : VALIDATION_COLORS.invalid.text,
                         }}>
                           {current}<span style={{ color: 'var(--text-hint)', fontWeight: 400 }}>/{expected}</span>
                         </span>
@@ -208,10 +208,10 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
                   })}
                 </div>
               </div>
-              <div style={{ ...styles.validationBlock, borderTopColor: numValid ? '#43a047' : '#ef5350', flex: 1 }}>
+              <div style={{ ...styles.validationBlock, borderTopColor: numValid ? VALIDATION_COLORS.valid.accent : VALIDATION_COLORS.invalid.accent, flex: 1 }}>
                 <h4 style={styles.validationTitle}>
                   Values
-                  <span style={{ ...styles.checkBadge, background: numValid ? '#e8f5e9' : '#ffebee', color: numValid ? '#2e7d32' : '#c62828' }}>
+                  <span style={{ ...styles.checkBadge, background: numValid ? VALIDATION_COLORS.valid.bg : VALIDATION_COLORS.invalid.bg, color: numValid ? VALIDATION_COLORS.valid.text : VALIDATION_COLORS.invalid.text }}>
                     {numValid ? '\u2713' : '\u2717'}
                   </span>
                 </h4>
@@ -224,7 +224,7 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
                       <div key={num} style={{ ...styles.validationRow, backgroundColor: isOk ? 'transparent' : '#fef2f2' }}>
                         <span style={{
                           ...styles.numBadge,
-                          backgroundColor: isHot ? '#c62828' : 'var(--text-secondary)',
+                          backgroundColor: isHot ? DICE_HOT_COLOR : 'var(--text-secondary)',
                           color: 'white',
                         }}>
                           {num}
@@ -233,7 +233,7 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
                         <span style={{
                           fontWeight: 700,
                           fontSize: 13,
-                          color: isOk ? '#43a047' : '#c62828',
+                          color: isOk ? VALIDATION_COLORS.valid.accent : VALIDATION_COLORS.invalid.text,
                         }}>
                           {current}<span style={{ color: 'var(--text-hint)', fontWeight: 400 }}>/{expected}</span>
                         </span>
@@ -272,10 +272,10 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
           />
         </div>
         <div className="validation-sidebar">
-          <div style={{ ...styles.validationBlock, borderTopColor: portsValid ? '#43a047' : '#ef5350' }}>
+          <div style={{ ...styles.validationBlock, borderTopColor: portsValid ? VALIDATION_COLORS.valid.accent : VALIDATION_COLORS.invalid.accent }}>
             <h4 style={styles.validationTitle}>
               Ports
-              <span style={{ ...styles.checkBadge, background: portsValid ? '#e8f5e9' : '#ffebee', color: portsValid ? '#2e7d32' : '#c62828' }}>
+              <span style={{ ...styles.checkBadge, background: portsValid ? VALIDATION_COLORS.valid.bg : VALIDATION_COLORS.invalid.bg, color: portsValid ? VALIDATION_COLORS.valid.text : VALIDATION_COLORS.invalid.text }}>
                 {portsValid ? '\u2713' : '\u2717'}
               </span>
             </h4>
@@ -291,7 +291,7 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
                     <span style={{
                       fontWeight: 700,
                       fontSize: 13,
-                      color: isOk ? '#43a047' : '#c62828',
+                      color: isOk ? VALIDATION_COLORS.valid.accent : VALIDATION_COLORS.invalid.text,
                     }}>
                       {current}<span style={{ color: 'var(--text-hint)', fontWeight: 400 }}>/{expected}</span>
                     </span>

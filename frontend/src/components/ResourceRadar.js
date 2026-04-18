@@ -1,7 +1,7 @@
 import React from 'react';
 import { RESOURCES } from '../shared/constants';
 
-const PADDING = 48;        // extra space around the chart for labels
+const PADDING = 54;        // extra space around the chart for labels
 const RADIUS = 85;         // outer ring radius
 const CENTER = RADIUS + PADDING;
 const SIZE = CENTER * 2;
@@ -112,14 +112,14 @@ export default function ResourceRadar({ perResource }) {
               y={pos.y + yOffset}
               textAnchor={anchor}
               dominantBaseline="central"
-              fontSize="20"
+              fontSize="28"
               fontFamily="'Inter', sans-serif"
             >
               {d.emoji}
             </text>
             <text
               x={pos.x}
-              y={pos.y + yOffset + 18}
+              y={pos.y + yOffset + 22}
               textAnchor={anchor}
               dominantBaseline="central"
               fontSize="11"

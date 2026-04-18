@@ -1,15 +1,7 @@
 import React, { useState } from 'react';
 import { BOARD_ROWS, TILE_CENTERS, hexPoints, getSettlementPixel, BOARD_CENTER, DARK_TILES } from '../shared/boardGeometry';
-import { PORT_COLORS, PORT_EMOJI_LABELS } from '../shared/constants';
-
-// Return color based on rank percentile: green (top third), yellow (middle), red (bottom third)
-function getRankColor(rank, totalRanks) {
-  if (totalRanks <= 1) return { fill: '#43a047', stroke: '#2e7d32', text: '#2e7d32' }; // green
-  const pct = (rank - 1) / (totalRanks - 1); // 0 = best, 1 = worst
-  if (pct < 0.33) return { fill: '#43a047', stroke: '#2e7d32', text: '#fff' };  // green
-  if (pct < 0.66) return { fill: '#f9a825', stroke: '#f57f17', text: '#fff' };  // yellow
-  return { fill: '#e53935', stroke: '#c62828', text: '#fff' };                  // red
-}
+import { getRankColor, DICE_HOT_COLOR } from '../shared/constants';
+import PortBadge, { computePortBadgePos } from './PortBadge';
 
 export default function HexBoard({ tiles, positions, ports, onPositionClick, onTileClick, rotation = 0 }) {
   const [hoveredPos, setHoveredPos] = useState(null);
@@ -124,7 +116,7 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
               </text>
               {hex.tile.value > 0 && (
                 <>
-                  <circle cx={hex.x} cy={hex.y + 18} r="22" fill={hasRobber ? '#e0e0e0' : '#faf8f5'} stroke={hasRobber ? '#1a1a1a' : isHot ? '#c62828' : '#5d4037'} strokeWidth={hasRobber ? 2 : isHot ? 2 : 1.5} />
+                  <circle cx={hex.x} cy={hex.y + 18} r="22" fill={hasRobber ? '#e0e0e0' : '#faf8f5'} stroke={hasRobber ? '#1a1a1a' : isHot ? DICE_HOT_COLOR : '#5d4037'} strokeWidth={hasRobber ? 2 : isHot ? 2 : 1.5} />
                   <text
                     x={hex.x}
                     y={hex.y + 18}
@@ -133,7 +125,7 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
                     fontSize="20"
                     fontWeight={isHot ? '800' : '600'}
                     fontFamily="'Inter', sans-serif"
-                    fill={hasRobber ? '#1a1a1a' : isHot ? '#c62828' : '#3e2723'}
+                    fill={hasRobber ? '#1a1a1a' : isHot ? DICE_HOT_COLOR : '#3e2723'}
                   >
                     {hex.tile.value}
                   </text>
@@ -161,83 +153,19 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
       {/* Draw ports */}
       {ports && ports.map((port) => {
         if (port.type === 'none') return null;
-        const pA = getSettlementPixel(port.positions[0]);
-        const pB = getSettlementPixel(port.positions[1]);
-        if (!pA || !pB) return null;
-
-        // Midpoint of the edge
-        const midX = (pA.x + pB.x) / 2;
-        const midY = (pA.y + pB.y) / 2;
-
-        // Perpendicular bisector direction (ensures equal distance to both vertices)
-        const edgeDx = pB.x - pA.x;
-        const edgeDy = pB.y - pA.y;
-        const perpX = -edgeDy;
-        const perpY = edgeDx;
-        const toCenterX = BOARD_CENTER.x - midX;
-        const toCenterY = BOARD_CENTER.y - midY;
-        const dot = perpX * toCenterX + perpY * toCenterY;
-        const sign = dot < 0 ? 1 : -1;
-        const perpLen = Math.sqrt(perpX * perpX + perpY * perpY) || 1;
-        const nx = sign * perpX / perpLen;
-        const ny = sign * perpY / perpLen;
-        const dist = 55;
-        const badgeX = midX + nx * dist;
-        const badgeY = midY + ny * dist;
-
-        const colors = PORT_COLORS[port.type] || PORT_COLORS['3:1'];
-        const label = PORT_EMOJI_LABELS[port.type] || port.text.replace(' 2:1', '');
-        const sublabel = port.type !== '3:1' ? '2:1' : '';
+        const pos = computePortBadgePos(port.positions[0], port.positions[1], 55);
+        if (!pos) return null;
 
         return (
           <g key={`port-${port.index}`}>
-            {/* Lines from each vertex to the badge */}
-            <line x1={pA.x} y1={pA.y} x2={badgeX} y2={badgeY} stroke={colors.stroke} strokeWidth="2" strokeLinecap="round" opacity="0.6" />
-            <line x1={pB.x} y1={pB.y} x2={badgeX} y2={badgeY} stroke={colors.stroke} strokeWidth="2" strokeLinecap="round" opacity="0.6" />
-            {/* Dots on vertices */}
-            <circle cx={pA.x} cy={pA.y} r="5" fill={colors.stroke} opacity="0.8" />
-            <circle cx={pB.x} cy={pB.y} r="5" fill={colors.stroke} opacity="0.8" />
-            {/* Port pill badge - counter-rotate so text stays upright */}
-            <g transform={textRotate(badgeX, badgeY)}>
-              <rect
-                x={badgeX - 40}
-                y={badgeY - (sublabel ? 22 : 14)}
-                width="80"
-                height={sublabel ? 46 : 28}
-                rx="14"
-                fill={colors.fill}
-                stroke={colors.stroke}
-                strokeWidth="1.5"
-                filter="url(#port-shadow)"
-              />
-              <text
-                x={badgeX}
-                y={badgeY + (sublabel ? -7 : 0)}
-                textAnchor="middle"
-                dominantBaseline="central"
-                fontSize="13"
-                fontWeight="700"
-                fontFamily="'Inter', sans-serif"
-                fill={colors.text}
-              >
-                {label}
-              </text>
-              {sublabel && (
-                <text
-                  x={badgeX}
-                  y={badgeY + 14}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  fontSize="12"
-                  fontWeight="600"
-                  fontFamily="'Inter', sans-serif"
-                  fill={colors.text}
-                  opacity="0.8"
-                >
-                  {sublabel}
-                </text>
-              )}
-            </g>
+            <PortBadge
+              portType={port.type}
+              badgeX={pos.badgeX}
+              badgeY={pos.badgeY}
+              pA={pos.pA}
+              pB={pos.pB}
+              textTransform={textRotate(pos.badgeX, pos.badgeY)}
+            />
           </g>
         );
       })}
@@ -383,7 +311,7 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
                     fontSize="11"
                     fontWeight="700"
                     fontFamily="'Inter', sans-serif"
-                    fill={tile.has_robber ? 'var(--text-disabled)' : (tile.value === 6 || tile.value === 8) ? '#c62828' : 'var(--text-body)'}
+                    fill={tile.has_robber ? 'var(--text-disabled)' : (tile.value === 6 || tile.value === 8) ? DICE_HOT_COLOR : 'var(--text-body)'}
                   >
                     {tile.value}
                   </text>

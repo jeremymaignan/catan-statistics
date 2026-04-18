@@ -1,6 +1,7 @@
 import React from 'react';
-import { BOARD_ROWS, TILE_CENTERS, hexPoints, getSettlementPixel, BOARD_CENTER, ALL_COASTAL_EDGES, DARK_TILES } from '../shared/boardGeometry';
-import { RESOURCE_BOARD_COLORS, RESOURCE_LABELS, PORT_COLORS, PORT_EMOJI_LABELS, PORT_SUBLABELS } from '../shared/constants';
+import { BOARD_ROWS, TILE_CENTERS, hexPoints, getSettlementPixel, ALL_COASTAL_EDGES, DARK_TILES } from '../shared/boardGeometry';
+import { RESOURCE_BOARD_COLORS, RESOURCE_LABELS, PORT_COLORS, PORT_EMOJI_LABELS, DICE_HOT_COLOR } from '../shared/constants';
+import PortBadge, { computePortBadgePos } from './PortBadge';
 
 const edgeKey = (a, b) => `${a}-${b}`;
 
@@ -59,7 +60,7 @@ export default function SetupBoardPreview({ resources, values, ports, blockedEdg
                 <circle
                   cx={hex.x} cy={hex.y + 8} r="20"
                   fill="#faf8f5"
-                  stroke={isHot ? '#c62828' : '#5d4037'}
+                  stroke={isHot ? DICE_HOT_COLOR : '#5d4037'}
                   strokeWidth={isHot ? 2 : 1}
                 />
                 <text
@@ -67,7 +68,7 @@ export default function SetupBoardPreview({ resources, values, ports, blockedEdg
                   textAnchor="middle" dominantBaseline="central"
                   fontSize="18" fontWeight={isHot ? '800' : '600'}
                   fontFamily="'Inter', sans-serif"
-                  fill={isHot ? '#c62828' : '#3e2723'}
+                  fill={isHot ? DICE_HOT_COLOR : '#3e2723'}
                 >
                   {hex.value}
                 </text>
@@ -86,39 +87,12 @@ export default function SetupBoardPreview({ resources, values, ports, blockedEdg
         const key = edgeKey(posA, posB);
         const portType = ports[key] || 'none';
         const isBlocked = blockedEdges && blockedEdges.has(key) && portType === 'none';
-        const hasPort = portType !== 'none';
-
-        // Midpoint of the two coastal vertices
-        const midX = (pA.x + pB.x) / 2;
-        const midY = (pA.y + pB.y) / 2;
-
-        // Perpendicular bisector direction (ensures equal distance to both vertices)
-        const edgeDx = pB.x - pA.x;
-        const edgeDy = pB.y - pA.y;
-        const perpX = -edgeDy;
-        const perpY = edgeDx;
-        // Pick the one pointing outward (away from board center)
-        const toCenterX = BOARD_CENTER.x - midX;
-        const toCenterY = BOARD_CENTER.y - midY;
-        const dot = perpX * toCenterX + perpY * toCenterY;
-        const sign = dot < 0 ? 1 : -1;
-        const perpLen = Math.sqrt(perpX * perpX + perpY * perpY) || 1;
-        const nx = sign * perpX / perpLen;
-        const ny = sign * perpY / perpLen;
-        const dist = hasPort ? 55 : 28;
-        const badgeX = midX + nx * dist;
-        const badgeY = midY + ny * dist;
-
-        const colors = PORT_COLORS[portType];
-        const label = PORT_EMOJI_LABELS[portType];
-        const sublabel = PORT_SUBLABELS[portType];
         const isNone = portType === 'none';
-        const lineColor = isNone ? '#ccc' : colors.stroke;
 
-        // Blocked edges: show nothing
-        if (isBlocked) {
-          return null;
-        }
+        if (isBlocked) return null;
+
+        const pos = computePortBadgePos(posA, posB, isNone ? 28 : 55);
+        if (!pos) return null;
 
         return (
           <g
@@ -126,21 +100,16 @@ export default function SetupBoardPreview({ resources, values, ports, blockedEdg
             onClick={() => onPortClick(key)}
             style={{ cursor: 'pointer' }}
           >
-            {/* Lines from each vertex to the badge */}
-            <line x1={pA.x} y1={pA.y} x2={badgeX} y2={badgeY} stroke={lineColor} strokeWidth="2" strokeLinecap="round" opacity={isNone ? 0.3 : 0.6} />
-            <line x1={pB.x} y1={pB.y} x2={badgeX} y2={badgeY} stroke={lineColor} strokeWidth="2" strokeLinecap="round" opacity={isNone ? 0.3 : 0.6} />
-            {/* Dots on vertices */}
-            <circle cx={pA.x} cy={pA.y} r={isNone ? 3 : 5} fill={lineColor} opacity={isNone ? 0.4 : 0.8} />
-            <circle cx={pB.x} cy={pB.y} r={isNone ? 3 : 5} fill={lineColor} opacity={isNone ? 0.4 : 0.8} />
-
             {isNone ? (
               <>
-                <circle
-                  cx={badgeX} cy={badgeY} r="16"
-                  fill="var(--page-bg)" stroke="var(--border-light)" strokeWidth="1.5"
-                />
+                {/* Lines from each vertex to the "+" circle */}
+                <line x1={pA.x} y1={pA.y} x2={pos.badgeX} y2={pos.badgeY} stroke="#ccc" strokeWidth="2" strokeLinecap="round" opacity="0.3" />
+                <line x1={pB.x} y1={pB.y} x2={pos.badgeX} y2={pos.badgeY} stroke="#ccc" strokeWidth="2" strokeLinecap="round" opacity="0.3" />
+                <circle cx={pA.x} cy={pA.y} r="3" fill="#ccc" opacity="0.4" />
+                <circle cx={pB.x} cy={pB.y} r="3" fill="#ccc" opacity="0.4" />
+                <circle cx={pos.badgeX} cy={pos.badgeY} r="16" fill="var(--page-bg)" stroke="var(--border-light)" strokeWidth="1.5" />
                 <text
-                  x={badgeX} y={badgeY}
+                  x={pos.badgeX} y={pos.badgeY}
                   textAnchor="middle" dominantBaseline="central"
                   fontSize="18" fontWeight="600"
                   fontFamily="'Inter', sans-serif"
@@ -150,38 +119,13 @@ export default function SetupBoardPreview({ resources, values, ports, blockedEdg
                 </text>
               </>
             ) : (
-              <>
-                <rect
-                  x={badgeX - 40} y={badgeY - (sublabel ? 22 : 14)}
-                  width="80" height={sublabel ? 46 : 28}
-                  rx="14"
-                  fill={colors.fill}
-                  stroke={colors.stroke}
-                  strokeWidth="1.5"
-                  filter="url(#port-shadow)"
-                />
-                <text
-                  x={badgeX} y={badgeY + (sublabel ? -7 : 0)}
-                  textAnchor="middle" dominantBaseline="central"
-                  fontSize="13" fontWeight="700"
-                  fontFamily="'Inter', sans-serif"
-                  fill={colors.text}
-                >
-                  {label}
-                </text>
-                {sublabel && (
-                  <text
-                    x={badgeX} y={badgeY + 14}
-                    textAnchor="middle" dominantBaseline="central"
-                    fontSize="12" fontWeight="600"
-                    fontFamily="'Inter', sans-serif"
-                    fill={colors.text}
-                    opacity="0.8"
-                  >
-                    {sublabel}
-                  </text>
-                )}
-              </>
+              <PortBadge
+                portType={portType}
+                badgeX={pos.badgeX}
+                badgeY={pos.badgeY}
+                pA={pos.pA}
+                pB={pos.pB}
+              />
             )}
           </g>
         );

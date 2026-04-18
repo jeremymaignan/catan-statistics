@@ -1,4 +1,5 @@
 import React from 'react';
+import { VALIDATION_COLORS } from '../shared/constants';
 
 export default function SettlementsCard({ settlements, points }) {
   if (!settlements || Object.keys(settlements).length === 0) return null;
@@ -14,7 +15,7 @@ export default function SettlementsCard({ settlements, points }) {
             <span style={{ ...styles.icon, background: '#7b1fa2', borderRadius: 5 }}>{'\u25B2'}</span>
             <span style={styles.label}>Colonies</span>
           </div>
-          <span style={{ ...styles.count, color: colonyCount > 5 ? '#c62828' : 'var(--text-primary)' }}>
+          <span style={{ ...styles.count, color: colonyCount > 5 ? VALIDATION_COLORS.over : 'var(--text-primary)' }}>
             {colonyCount}<span style={styles.max}>/5</span>
           </span>
         </div>
@@ -23,7 +24,7 @@ export default function SettlementsCard({ settlements, points }) {
             <span style={{ ...styles.icon, background: '#1565c0', borderRadius: 5 }}>{'\u2605'}</span>
             <span style={styles.label}>Cities</span>
           </div>
-          <span style={{ ...styles.count, color: cityCount > 4 ? '#c62828' : 'var(--text-primary)' }}>
+          <span style={{ ...styles.count, color: cityCount > 4 ? VALIDATION_COLORS.over : 'var(--text-primary)' }}>
             {cityCount}<span style={styles.max}>/4</span>
           </span>
         </div>
