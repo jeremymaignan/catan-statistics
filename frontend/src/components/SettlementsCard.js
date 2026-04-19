@@ -1,11 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { VALIDATION_COLORS } from '../shared/constants';
 
+function BonusToggle({ active, onClick, emoji, label }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        ...styles.bonusBtn,
+        background: active ? 'var(--tip-success-bg)' : 'var(--card-inner-bg)',
+        border: `1.5px solid ${active ? 'var(--tip-success-border)' : 'var(--border-main)'}`,
+        color: active ? 'var(--tip-success-text)' : 'var(--text-muted)',
+      }}
+      title={`${label} (+2 VP)`}
+    >
+      <span style={styles.bonusEmoji}>{emoji}</span>
+      <span style={styles.bonusLabel}>{label}</span>
+      <span style={styles.bonusVp}>+2</span>
+    </button>
+  );
+}
+
 export default function SettlementsCard({ settlements, points }) {
+  const [longestRoad, setLongestRoad] = useState(false);
+  const [largestArmy, setLargestArmy] = useState(false);
+
   if (!settlements || Object.keys(settlements).length === 0) return null;
 
   const colonyCount = Object.values(settlements).filter(t => t === 'colony').length;
   const cityCount = Object.values(settlements).filter(t => t === 'city').length;
+  const totalPoints = (points || 0) + (longestRoad ? 2 : 0) + (largestArmy ? 2 : 0);
 
   return (
     <div>
@@ -30,8 +53,22 @@ export default function SettlementsCard({ settlements, points }) {
         </div>
         <div style={styles.pointsCard}>
           <span style={styles.pointsLabel}>Points</span>
-          <span style={styles.pointsValue}>{points}</span>
+          <span style={styles.pointsValue}>{totalPoints}</span>
         </div>
+      </div>
+      <div style={styles.bonusRow}>
+        <BonusToggle
+          active={longestRoad}
+          onClick={() => setLongestRoad(v => !v)}
+          emoji={'\uD83D\uDEE4\uFE0F'}
+          label="Longest Road"
+        />
+        <BonusToggle
+          active={largestArmy}
+          onClick={() => setLargestArmy(v => !v)}
+          emoji={'\u2694\uFE0F'}
+          label="Largest Army"
+        />
       </div>
     </div>
   );
@@ -107,5 +144,37 @@ const styles = {
     fontSize: 26,
     fontWeight: 800,
     color: 'var(--text-primary)',
+  },
+  bonusRow: {
+    display: 'flex',
+    gap: 8,
+    marginTop: 8,
+  },
+  bonusBtn: {
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 5,
+    padding: '7px 10px',
+    borderRadius: 10,
+    cursor: 'pointer',
+    fontFamily: 'inherit',
+    fontSize: 12,
+    fontWeight: 600,
+    transition: 'all 0.15s ease',
+  },
+  bonusEmoji: {
+    fontSize: 14,
+    lineHeight: 1,
+  },
+  bonusLabel: {
+    flex: 1,
+    textAlign: 'left',
+    whiteSpace: 'nowrap',
+  },
+  bonusVp: {
+    fontSize: 11,
+    fontWeight: 700,
+    opacity: 0.7,
   },
 };

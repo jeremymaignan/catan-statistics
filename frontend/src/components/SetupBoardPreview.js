@@ -1,6 +1,6 @@
 import React from 'react';
 import { BOARD_ROWS, TILE_CENTERS, hexPoints, getSettlementPixel, ALL_COASTAL_EDGES, DARK_TILES } from '../shared/boardGeometry';
-import { RESOURCE_BOARD_COLORS, RESOURCE_LABELS, PORT_COLORS, PORT_EMOJI_LABELS, DICE_HOT_COLOR } from '../shared/constants';
+import { RESOURCE_BOARD_COLORS, RESOURCE_LABELS, PORT_COLORS, PORT_EMOJI_LABELS } from '../shared/constants';
 import PortBadge, { computePortBadgePos } from './PortBadge';
 
 const edgeKey = (a, b) => `${a}-${b}`;
@@ -60,7 +60,7 @@ export default function SetupBoardPreview({ resources, values, ports, blockedEdg
                 <circle
                   cx={hex.x} cy={hex.y + 8} r="20"
                   fill="#faf8f5"
-                  stroke={isHot ? DICE_HOT_COLOR : '#5d4037'}
+                  stroke={isHot ? '#c62828' : '#5d4037'}
                   strokeWidth={isHot ? 2 : 1}
                 />
                 <text
@@ -68,7 +68,7 @@ export default function SetupBoardPreview({ resources, values, ports, blockedEdg
                   textAnchor="middle" dominantBaseline="central"
                   fontSize="18" fontWeight={isHot ? '800' : '600'}
                   fontFamily="'Inter', sans-serif"
-                  fill={isHot ? DICE_HOT_COLOR : '#3e2723'}
+                  fill={isHot ? '#c62828' : '#3e2723'}
                 >
                   {hex.value}
                 </text>

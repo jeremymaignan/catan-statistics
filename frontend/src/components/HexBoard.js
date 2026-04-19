@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BOARD_ROWS, TILE_CENTERS, hexPoints, getSettlementPixel, BOARD_CENTER, DARK_TILES } from '../shared/boardGeometry';
-import { getRankColor, DICE_HOT_COLOR } from '../shared/constants';
+import { getRankColor } from '../shared/constants';
 import PortBadge, { computePortBadgePos } from './PortBadge';
 
 export default function HexBoard({ tiles, positions, ports, onPositionClick, onTileClick, rotation = 0 }) {
@@ -116,7 +116,7 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
               </text>
               {hex.tile.value > 0 && (
                 <>
-                  <circle cx={hex.x} cy={hex.y + 18} r="22" fill={hasRobber ? '#e0e0e0' : '#faf8f5'} stroke={hasRobber ? '#1a1a1a' : isHot ? DICE_HOT_COLOR : '#5d4037'} strokeWidth={hasRobber ? 2 : isHot ? 2 : 1.5} />
+                  <circle cx={hex.x} cy={hex.y + 18} r="22" fill={hasRobber ? '#e0e0e0' : '#faf8f5'} stroke={hasRobber ? '#1a1a1a' : isHot ? '#c62828' : '#5d4037'} strokeWidth={hasRobber ? 2 : isHot ? 2 : 1.5} />
                   <text
                     x={hex.x}
                     y={hex.y + 18}
@@ -125,7 +125,7 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
                     fontSize="20"
                     fontWeight={isHot ? '800' : '600'}
                     fontFamily="'Inter', sans-serif"
-                    fill={hasRobber ? '#1a1a1a' : isHot ? DICE_HOT_COLOR : '#3e2723'}
+                    fill={hasRobber ? '#1a1a1a' : isHot ? '#c62828' : '#3e2723'}
                   >
                     {hex.tile.value}
                   </text>
@@ -311,7 +311,7 @@ export default function HexBoard({ tiles, positions, ports, onPositionClick, onT
                     fontSize="11"
                     fontWeight="700"
                     fontFamily="'Inter', sans-serif"
-                    fill={tile.has_robber ? 'var(--text-disabled)' : (tile.value === 6 || tile.value === 8) ? DICE_HOT_COLOR : 'var(--text-body)'}
+                    fill={tile.has_robber ? 'var(--text-disabled)' : (tile.value === 6 || tile.value === 8) ? '#c62828' : 'var(--text-body)'}
                   >
                     {tile.value}
                   </text>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { RESOURCE_EMOJIS, DICE_HOT_COLOR, DICE_SEVEN_COLOR, DICE_DEFAULT_COLOR } from '../shared/constants';
+import { RESOURCE_EMOJIS, getDiceColor } from '../shared/constants';
 import ResourceRadar from './ResourceRadar';
 import { styles } from '../styles/StatsPanel.styles';
 
@@ -49,14 +49,14 @@ export default function StatsPanel({ statistics, settlements }) {
                 </thead>
                 <tbody>
                   {DICE_PROBABILITIES.map((d) => {
-                    const isHot = d.roll === 6 || d.roll === 8;
+                    const color = getDiceColor(d.roll);
                     const isSeven = d.roll === 7;
                     return (
                       <tr key={d.roll} style={isSeven ? { backgroundColor: 'var(--tip-warning-bg)' } : {}}>
                         <td style={styles.td}>
                           <span style={{
-                            fontWeight: isHot || isSeven ? 800 : 600,
-                            color: isHot ? DICE_HOT_COLOR : isSeven ? DICE_SEVEN_COLOR : 'var(--text-primary)',
+                            fontWeight: 700,
+                            color,
                             fontSize: 14,
                           }}>{d.roll}</span>
                         </td>
@@ -71,7 +71,7 @@ export default function StatsPanel({ statistics, settlements }) {
                             <div style={{
                               ...styles.dotsFill,
                               width: `${(d.dots / 6) * 100}%`,
-                              backgroundColor: isHot ? DICE_HOT_COLOR : isSeven ? DICE_SEVEN_COLOR : DICE_DEFAULT_COLOR,
+                              backgroundColor: color,
                             }} />
                           </div>
                         </td>
@@ -108,8 +108,8 @@ export default function StatsPanel({ statistics, settlements }) {
                       <td style={styles.td}>
                         <span style={{
                           ...styles.diceValue,
-                          color: (value === '6' || value === '8') ? DICE_HOT_COLOR : 'var(--text-primary)',
-                          fontWeight: (value === '6' || value === '8') ? 800 : 600,
+                          color: getDiceColor(value),
+                          fontWeight: 700,
                         }}>{value}</span>
                       </td>
                       <td style={styles.td}>

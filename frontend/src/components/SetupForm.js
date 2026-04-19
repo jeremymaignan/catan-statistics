@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import SetupBoardPreview from './SetupBoardPreview';
-import { ALL_RESOURCES, DICE_HOT_COLOR, VALIDATION_COLORS } from '../shared/constants';
+import { ALL_RESOURCES, getDiceColor, VALIDATION_COLORS } from '../shared/constants';
 import { ALL_COASTAL_EDGES } from '../shared/boardGeometry';
 import { styles } from '../styles/SetupForm.styles';
 import '../responsive.css';
@@ -151,8 +151,8 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
                       style={{
                         ...styles.select,
                         ...(resources[idx] === 'r' ? { opacity: 0.4 } : {}),
-                        fontWeight: (values[idx] === '6' || values[idx] === '8') ? 700 : 500,
-                        color: (values[idx] === '6' || values[idx] === '8') ? DICE_HOT_COLOR : 'var(--text-primary)',
+                        fontWeight: values[idx] !== '0' ? 700 : 500,
+                        color: values[idx] !== '0' ? getDiceColor(values[idx]) : 'var(--text-primary)',
                       }}
                       disabled={resources[idx] === 'r'}
                     >
@@ -219,12 +219,11 @@ export default function SetupForm({ onCreateGame, onUploadImage, loading }) {
                   {Object.entries(EXPECTED_NUMBERS).filter(([n]) => n !== '0').map(([num, expected]) => {
                     const current = numCounts[num] || 0;
                     const isOk = current === expected;
-                    const isHot = num === '6' || num === '8';
                     return (
                       <div key={num} style={{ ...styles.validationRow, backgroundColor: isOk ? 'transparent' : 'var(--validation-row-err-bg)' }}>
                         <span style={{
                           ...styles.numBadge,
-                          backgroundColor: isHot ? DICE_HOT_COLOR : 'var(--text-secondary)',
+                          backgroundColor: getDiceColor(num),
                           color: 'white',
                         }}>
                           {num}

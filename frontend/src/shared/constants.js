@@ -69,14 +69,22 @@ export const PORT_TO_RESOURCE = {
 
 // ── UI colors ───────────────────────────────────────────────────────
 
-/** Hot dice value (6 & 8) accent color */
-export const DICE_HOT_COLOR = '#c62828';
+/** Dice value color tiers */
+const DICE_COLORS = {
+  rare:    '#c62828',   // 2, 12 — red
+  hot:     '#388e3c',   // 5, 6, 8, 9 — green
+  seven:   '#1a1a1a',   // 7 — black
+  common:  '#e6a817',   // 3, 4, 10, 11 — yellow/amber
+};
 
-/** Seven / robber accent color */
-export const DICE_SEVEN_COLOR = '#e65100';
-
-/** Default dice number color */
-export const DICE_DEFAULT_COLOR = '#8d6e63';
+/** Return the accent color for a given dice value */
+export function getDiceColor(value) {
+  const v = Number(value);
+  if (v === 2 || v === 12) return DICE_COLORS.rare;
+  if (v === 5 || v === 6 || v === 8 || v === 9) return DICE_COLORS.hot;
+  if (v === 7) return DICE_COLORS.seven;
+  return DICE_COLORS.common;
+}
 
 /** Rank color tiers for settlement position scores */
 export const RANK_COLORS = {

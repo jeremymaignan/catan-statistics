@@ -253,6 +253,42 @@ function cityUpgradeTips(ctx) {
   }];
 }
 
+function diceValueCoverageTips(ctx) {
+  const { statistics } = ctx;
+  const perDice = statistics?.per_dice_value;
+  if (!perDice) return [];
+
+  // Collect dice values where the player has at least one non-blocked entry
+  const coveredValues = new Set();
+  for (const [val, entries] of Object.entries(perDice)) {
+    const v = Number(val);
+    if (v === 7) continue;
+    if (entries.some(e => !e.blocked)) coveredValues.add(v);
+  }
+
+  // All possible non-seven dice values
+  const ALL_VALUES = [2, 3, 4, 5, 6, 8, 9, 10, 11, 12];
+  const CORE_VALUES = [3, 4, 5, 6, 8, 9, 10, 11]; // excluding 2 and 12
+  const missing = ALL_VALUES.filter(v => !coveredValues.has(v));
+
+  if (missing.length === 0) {
+    // Covers every value 2-12
+    return [{ type: 'success', text: 'You receive resources on every dice value!' }];
+  }
+
+  // Check if only 2 and/or 12 are missing
+  const missingCore = missing.filter(v => CORE_VALUES.includes(v));
+  if (missingCore.length === 0) {
+    const excluded = missing.sort((a, b) => a - b).join(' and ');
+    return [{
+      type: 'success',
+      text: `You receive resources on all dice values (excluding ${excluded}).`,
+    }];
+  }
+
+  return [];
+}
+
 /**
  * Registry of all tip generators.
  * To add a new tip category, define a function above and append it here.
@@ -262,6 +298,7 @@ const TIP_GENERATORS = [
   weakResourceTips,
   portSynergyTips,
   diversityTips,
+  diceValueCoverageTips,
   strongestResourceTips,
   noPortTips,
   robberPlacementTips,
