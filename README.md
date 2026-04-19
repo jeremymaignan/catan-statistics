@@ -55,7 +55,7 @@ OPENAI_API_KEY=sk-your-key-here
 ## Project Structure
 
 ```
-catan-statistics/
+catan-companion/
 ├── docker-compose.yml
 ├── api/
 │   ├── Dockerfile
